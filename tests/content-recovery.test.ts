@@ -98,6 +98,15 @@ test("partial recovery cannot turn otherwise parseable TeX into a missing-argume
 	const source = math`$x\\frac{a}$`;
 	assert.equal(repairMathForDisplay(source), source);
 });
+test("escaped fenced code blocks recover as real blocks without decoding literal C escapes", () => {
+	const source = 'What does this print?\\n\\n```c\\n#include <stdio.h>\\nint main() {\\n  int x = 7 / 2;\\n  printf("%d\\\\n", x);\\n  return 0;\\n}\\n```\\n\\nChoose one.';
+	const expected = 'What does this print?\n\n```c\n#include <stdio.h>\nint main() {\n  int x = 7 / 2;\n  printf("%d\\n", x);\n  return 0;\n}\n```\n\nChoose one.';
+	assert.equal(repairMathForDisplay(source), expected);
+	assert.equal(repairMathForDisplay(expected), expected);
+	const isolated = "```python\\ndef solve(n):\\n    return n * 2\\n```";
+	assert.equal(repairMathForDisplay(isolated), "```python\ndef solve(n):\n    return n * 2\n```");
+	assert.equal(repairMathForDisplay('The escape `\\n` is literal.'), 'The escape `\\n` is literal.');
+});
 test("legacy compatibility and recovery share code barriers, including tilde and indentation", () => {
 	for (const source of ["    " + math`\(x\) \n\n`, "\\[\n~~~tex\n" + math`\n\n \(x\)` + "\n\\]\n~~~"]) {
 		assert.equal(repairMathForDisplay(source), source);

@@ -162,3 +162,15 @@ test("historical ambiguous options and absent/invalid original calls retain thei
 	renderToStaticMarkup(<AnsweredCard answer={answer} />);
 	assert.deepEqual(answer, before);
 });
+
+test("escaped C code questions render as code blocks, not literal escapes", () => {
+	const source = 'What does this print?\\n\\n```c\\n#include <stdio.h>\\nint main() {\\n  printf("%d", 7 / 2);\\n  return 0;\\n}\\n```';
+	const document = dom(render(source));
+	const blocks = document.querySelectorAll('[data-testid="md-code"]');
+	assert.equal(blocks.length, 1);
+	assert.equal(blocks[0]?.querySelector('[data-language="c"]')?.getAttribute("data-language"), "c");
+	const text = blocks[0]?.textContent ?? "";
+	assert.ok(text.includes("#include <stdio.h>"));
+	assert.ok(text.includes('printf("%d", 7 / 2);'));
+	assert.ok(!text.includes("\\n"), "no literal escape survives in the rendered code");
+});
