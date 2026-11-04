@@ -5,6 +5,11 @@ import { MAX_IMPORT_BODY_BYTES } from "./lib/notes-import-limits.ts";
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as { version: string; homepage: string };
 
 const nextConfig: NextConfig = {
+	// Development only: Herd proxies https://learnharness.test to this dev
+	// server, whose origin is not localhost. Without this entry Next blocks
+	// /_next/hmr as cross-origin and the page never hydrates. Production
+	// builds ignore the option.
+	allowedDevOrigins: ["learnharness.test"],
 	// Public build metadata only; no new runtime Electron version API.
 	env: { LH_VERSION: pkg.version, LH_HOMEPAGE: pkg.homepage },
 	// Leave multipart headroom above the 25 MiB file allowance. This is a
