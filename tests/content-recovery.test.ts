@@ -105,6 +105,9 @@ test("escaped fenced code blocks recover as real blocks without decoding literal
 	assert.equal(repairMathForDisplay(expected), expected);
 	const isolated = "```python\\ndef solve(n):\\n    return n * 2\\n```";
 	assert.equal(repairMathForDisplay(isolated), "```python\ndef solve(n):\n    return n * 2\n```");
+	const box = "```csharp\\nclass Box { public int X; }\\n\\nvar b1 = new Box { X = 1 };\\nvar b2 = b1;\\nb2.X = 5;\\nb2 = new Box { X = 7 };\\nb2.X = 8;\\n\\nConsole.WriteLine(b1.X);\\n```";
+	assert.equal(repairMathForDisplay(box),
+		"```csharp\nclass Box { public int X; }\n\nvar b1 = new Box { X = 1 };\nvar b2 = b1;\nb2.X = 5;\nb2 = new Box { X = 7 };\nb2.X = 8;\n\nConsole.WriteLine(b1.X);\n```");
 	assert.equal(repairMathForDisplay('The escape `\\n` is literal.'), 'The escape `\\n` is literal.');
 });
 test("legacy compatibility and recovery share code barriers, including tilde and indentation", () => {
