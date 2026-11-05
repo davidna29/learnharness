@@ -608,7 +608,7 @@ function QuestionDockForm({
 									data-kbdrow={i}
 									onClick={() => toggle(i)}
 									className={cn(
-										"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors",
+										"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring",
 										isSel ? "border-primary bg-accent" : "hover:bg-accent/50",
 										i === kbdIdx && !isSel && "ring-1 ring-border bg-accent/40",
 									)}
@@ -656,7 +656,7 @@ function QuestionDockForm({
 								className={cn(
 									// Option-row layout + radio circle (owner); the dashed
 									// outline stays — this is the deliberate non-answer.
-									"flex items-start gap-3 rounded-lg border border-dashed px-3 py-2 text-left text-sm outline-none transition-colors",
+									"flex items-start gap-3 rounded-lg border border-dashed px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring",
 									sel.dontKnow ? "border-primary text-foreground" : "text-muted-foreground",
 									kbdIdx === optionCount && !sel.dontKnow && "ring-1 ring-border bg-accent/40",
 								)}
@@ -683,7 +683,7 @@ function QuestionDockForm({
 								data-kbdrow={optionCount}
 								onClick={selectOther}
 								className={cn(
-									"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors",
+									"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring",
 									sel.otherSelected ? "border-primary bg-accent" : "border-dashed hover:bg-accent/50",
 									kbdIdx === optionCount && !sel.otherSelected && "ring-1 ring-border bg-accent/40",
 								)}
@@ -846,7 +846,7 @@ function QuestionDockForm({
 			    answer" with Enter-to-submit. */}
 				<div
 					data-testid={qd.mode === "text" ? "answer-field" : "thinking-field"}
-					className="m-1.5 rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
+					className="m-1.5 rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/60"
 				>
 					<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 						{qd.mode === "text" ? "Your answer" : "YOUR THINKING"}
@@ -906,7 +906,7 @@ function QuestionDockForm({
 							}}
 							placeholder="Why this answer? Whatever comes to mind."
 							className={cn(
-								"field-sizing-content lh-input max-h-48 w-full resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground/70",
+								"field-sizing-content lh-input max-h-48 w-full resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground",
 								// Phase-scaled prominence: teaching invites depth,
 								// probing stays quick.
 								phase === "teach" ? "min-h-[4.5rem]" : "min-h-10",

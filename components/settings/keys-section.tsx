@@ -219,7 +219,7 @@ function KeyTableRow({
 						data-testid={`${testid}-input`}
 						disabled={busy}
 						autoFocus
-						className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+						className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 					/>
 					<button
 						type="button"
@@ -235,7 +235,7 @@ function KeyTableRow({
 						onClick={onCancel}
 						disabled={busy}
 						data-testid={`${testid}-cancel`}
-						className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
+						className="shrink-0 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 					>
 						Cancel
 					</button>
@@ -245,7 +245,7 @@ function KeyTableRow({
 							onClick={() => void onDelete()}
 							disabled={busy}
 							data-testid={`${testid}-delete`}
-							className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-red-500 hover:underline"
+							className="shrink-0 text-xs text-muted-foreground underline-offset-2 hover:text-red-500 hover:underline"
 						>
 							Delete
 						</button>
@@ -279,7 +279,7 @@ function KeyTableRow({
 							target="_blank"
 							rel="noreferrer"
 							onClick={(e) => e.stopPropagation()}
-							className="text-[10px] text-muted-foreground/60 underline-offset-2 hover:text-foreground hover:underline"
+							className="text-[10px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 						>
 							key ↗
 						</a>
@@ -475,7 +475,7 @@ export function KeysSection({
 	}
 
 	if (loading || statuses === null) {
-		return <p className="px-6 py-5 text-xs text-muted-foreground/70">Loading keys…</p>;
+		return <p className="px-6 py-5 text-xs text-muted-foreground">Loading keys…</p>;
 	}
 
 	const { providerRows, toolRows, unknownRows, addable } = classifyKeys(statuses, providers);
@@ -600,7 +600,7 @@ export function KeysSection({
 				))}
 				{label === "Dictation" && <>
 					<DictationLanguageSetting />
-					<p data-testid="dictation-setup-hint" className="px-1 text-[11px] leading-relaxed text-muted-foreground/70">
+					<p data-testid="dictation-setup-hint" className="px-1 text-[11px] leading-relaxed text-muted-foreground">
 						Create a <a
 							href="https://console.deepgram.com/"
 							target="_blank"
@@ -642,7 +642,7 @@ function AddProviderEditor({
 				aria-label={`${provider.label} key`}
 				data-testid={`key-${provider.id}-input`}
 				autoFocus
-				className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+				className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 			/>
 			<button
 				type="button"
@@ -657,7 +657,7 @@ function AddProviderEditor({
 				type="button"
 				onClick={onCancel}
 				data-testid={`key-${provider.id}-cancel`}
-				className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
+				className="shrink-0 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 			>
 				Cancel
 			</button>
@@ -888,7 +888,7 @@ function CustomEndpointEditor({
 					data-testid="custom-baseurl-input"
 					disabled={busy}
 					autoFocus
-					className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+					className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 				/>
 			</div>
 			<input
@@ -899,7 +899,7 @@ function CustomEndpointEditor({
 				aria-label="Custom endpoint model IDs"
 				data-testid="custom-models-input"
 				disabled={busy}
-				className="h-7 min-w-0 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+				className="h-7 min-w-0 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 			/>
 			<label className="flex items-center gap-2 text-xs">Authentication
 				<select aria-label="Custom endpoint authentication" data-testid="custom-auth-mode" value={authMode} disabled={busy || pinsBusy} onChange={(e) => { setAuthMode(e.target.value as "keyless" | "apiKey"); setReuseKey(false); }}>
@@ -921,7 +921,7 @@ function CustomEndpointEditor({
 					aria-label="Custom endpoint API key"
 					data-testid="custom-key-input"
 					disabled={busy || pinsBusy || keySource === "env"}
-					className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+					className="h-7 min-w-0 flex-1 rounded-sm border border-border bg-background px-1.5 font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 				/>}
 				<button
 					type="button"
@@ -937,7 +937,7 @@ function CustomEndpointEditor({
 					onClick={onCancel}
 					disabled={busy}
 					data-testid="custom-cancel"
-					className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
+					className="shrink-0 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 				>
 					Cancel
 				</button>
@@ -950,7 +950,7 @@ function CustomEndpointEditor({
 						onClick={async () => { setBusy(true); const err = await onDelete(revision); if (err) setError(err); setBusy(false); }}
 						disabled={busy || pinsBusy}
 						data-testid="custom-delete"
-						className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-red-500 hover:underline"
+						className="shrink-0 text-xs text-muted-foreground underline-offset-2 hover:text-red-500 hover:underline"
 					>
 						Disconnect
 					</button>
@@ -976,7 +976,7 @@ function CustomEndpointEditor({
 										aria-label={`${m.id} context window in tokens`}
 										data-testid={pinTestid("custom-pin-context", m.id)}
 										disabled={pinsBusy}
-										className="h-7 w-20 shrink-0 rounded-sm border border-border bg-background px-1.5 text-right font-mono text-[11px] text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+										className="h-7 w-20 shrink-0 rounded-sm border border-border bg-background px-1.5 text-right font-mono text-[11px] text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 									/>
 									<input
 										type="text"
@@ -987,7 +987,7 @@ function CustomEndpointEditor({
 										aria-label={`${m.id} max output tokens`}
 										data-testid={pinTestid("custom-pin-maxtokens", m.id)}
 										disabled={pinsBusy}
-										className="h-7 w-20 shrink-0 rounded-sm border border-border bg-background px-1.5 text-right font-mono text-[11px] text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-muted-foreground/50"
+										className="h-7 w-20 shrink-0 rounded-sm border border-border bg-background px-1.5 text-right font-mono text-[11px] text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/50"
 									/>
 									<select
 										value={d.reasoning}

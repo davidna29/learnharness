@@ -346,11 +346,11 @@ export function SettingsDialogBody({
 						</p>
 					)}
 					{record === undefined ? (
-						<p className="px-6 py-5 text-xs text-muted-foreground/70">
+						<p className="px-6 py-5 text-xs text-muted-foreground">
 							Loading settings…
 						</p>
 					) : record === null ? (
-						<p className="px-6 py-5 text-xs text-muted-foreground/70">
+						<p className="px-6 py-5 text-xs text-muted-foreground">
 							Settings could not be loaded — refresh to retry.
 						</p>
 					) : (

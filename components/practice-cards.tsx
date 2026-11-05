@@ -110,7 +110,7 @@ export function ConcludeCard({ part }: ArtifactPartProps) {
 	// learner clicked; the record needs only the fact).
 	if (outcome === "dismissed") {
 		return (
-			<div data-testid="conclude-card" className="my-1 px-1 text-sm text-muted-foreground/70">
+			<div data-testid="conclude-card" className="my-1 px-1 text-sm text-muted-foreground">
 				Problem dismissed.
 			</div>
 		);

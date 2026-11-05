@@ -308,7 +308,7 @@ export function SessionRow({
 			onContextMenu={onContextMenu}
 			data-testid={kbdSelected ? "session-row-kbd" : "session-row"}
 			className={cn(
-				"relative mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent",
+				"group relative mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent",
 				active && "bg-accent",
 				kbdSelected && !active && "bg-accent/60 ring-1 ring-border",
 			)}
@@ -321,13 +321,13 @@ export function SessionRow({
 				    rule, finally applied to the picker too (owner, typography
 				    round): mono = chrome, Source Sans = human words. */}
 				<span className="block truncate font-prose text-(length:--lh-prose-size)">{chat.title}</span>
-				<span className="block text-xs text-muted-foreground">{sessionMeta(chat)}</span>
+				<span className={cn("block text-xs", active ? "text-foreground/60" : "text-muted-foreground group-hover:text-foreground/60")}>{sessionMeta(chat)}</span>
 			</span>
 			{/* The dumbbell rides the FAR RIGHT (owner round 6, 2026-10-05) —
 			    was left of the name; right-aligned keeps the titles flush with
 			    the teaching rows and reads cleaner. */}
 			{(chat.kind ?? "teach") === "practice" && (
-				<DumbbellIcon className="size-3.5 shrink-0 text-muted-foreground/70" aria-label="Practice session" />
+				<DumbbellIcon className="size-3.5 shrink-0 text-muted-foreground" aria-label="Practice session" />
 			)}
 		</button>
 	);
@@ -377,7 +377,7 @@ export function RenameRow({ chat, onCommit, onCancel }: { chat: ChatListItem; on
 					data-testid="session-rename-input"
 					className="lh-input w-full min-w-0 truncate border-0 border-b border-border bg-transparent px-0 text-foreground outline-none"
 				/>
-				<span className="block truncate text-xs text-muted-foreground">{sessionMeta(chat)}</span>
+				<span className="block truncate text-xs text-foreground/60">{sessionMeta(chat)}</span>
 			</span>
 		</div>
 	);
@@ -720,7 +720,7 @@ function SessionsSidebar() {
 				</div>
 
 				<div className="mx-3 mb-2 flex items-center gap-2">
-					<span className="text-xs uppercase tracking-widest text-muted-foreground/70">Sessions</span>
+					<span className="text-xs uppercase tracking-widest text-muted-foreground">Sessions</span>
 					<Hint label="Search sessions" action="sessions-search" side="bottom">
 					<span className="relative flex-1">
 						<Input
@@ -773,9 +773,9 @@ function SessionsSidebar() {
 							}}
 							placeholder="Search…"
 							aria-label="Search sessions"
-							className="h-6 rounded-sm border-border bg-background pl-6 text-xs placeholder:text-muted-foreground/60"
+							className="h-6 rounded-sm border-border bg-background pl-6 text-xs placeholder:text-muted-foreground"
 						/>
-						<SearchIcon className="pointer-events-none absolute left-1.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground/70" />
+						<SearchIcon className="pointer-events-none absolute left-1.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
 					</span>
 					</Hint>
 				</div>
@@ -787,6 +787,7 @@ function SessionsSidebar() {
 				    Practice / All — the real modes first, "All" as the escape
 				    hatch on the right, mirroring the create-buttons above.
 				    Persisted client-side. */}
+				<nav aria-label="Sessions" className="flex min-h-0 flex-1 flex-col">
 				<div className="mx-3 flex items-center gap-0.5 rounded-md border border-border/60 bg-background p-0.5" data-testid="session-kind-filter">
 					{(["teach", "practice", "all"] as const).map((f) => (
 						<button
@@ -838,6 +839,7 @@ function SessionsSidebar() {
 						)
 					)}
 				</div>
+				</nav>
 
 					{/* Background agents (owner, sidebar round): the section is
 					    ALWAYS here — empty means empty (the header sits alone); it
@@ -922,7 +924,7 @@ function SessionsSidebar() {
 								if (target) setDeleting(target);
 								setCtxChatId(null);
 							}}
-							className="flex items-center rounded-lg px-2.5 py-1.5 text-left text-muted-foreground/80 transition-colors hover:bg-accent hover:text-foreground"
+							className="flex items-center rounded-lg px-2.5 py-1.5 text-left text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 						>
 							Delete…
 						</button>

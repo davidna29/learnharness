@@ -74,7 +74,7 @@ export function SettingsRow({
 		<div data-testid={testid} className={cn("flex items-center justify-between gap-4 py-1", dimmed && "opacity-40")}>
 			<span className="min-w-0">
 				<span className="block font-prose text-(length:--lh-prose-size)">{label}</span>
-				{hint && <span className="block text-xs text-muted-foreground/70">{hint}</span>}
+				{hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
 			</span>
 			{children}
 		</div>
@@ -252,7 +252,7 @@ export function CommitInput({
 					e.currentTarget.blur();
 				}
 			}}
-			className="h-7 w-40 rounded-sm border border-border bg-background px-2 font-ui text-xs text-foreground outline-none placeholder:text-muted-foreground/60"
+			className="h-7 w-40 rounded-sm border border-border bg-background px-2 font-ui text-xs text-foreground outline-none placeholder:text-muted-foreground"
 		/>
 	);
 }

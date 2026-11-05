@@ -516,14 +516,14 @@ export function AgentSection({
 						setOpenSegment(open ? null : info.path);
 						setSegmentStatus(null);
 					}}
-					className="text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
+					className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 				>
 					{open ? "Hide text" : "Show text"}
 				</button>
 				{open && (
 					<div className="mt-1 flex flex-col gap-2">
 						<div>
-							<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground/70">Source</p>
+							<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Source</p>
 							<textarea
 								readOnly
 								value={info.sourceText}
@@ -532,7 +532,7 @@ export function AgentSection({
 							/>
 						</div>
 						<div>
-							<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground/70">Override</p>
+							<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Override</p>
 							<textarea
 								value={segmentDraft[info.path] ?? info.overrideText ?? ""}
 								onChange={(e) => setSegmentDraft({ ...segmentDraft, [info.path]: e.target.value })}
@@ -558,7 +558,7 @@ export function AgentSection({
 								<button
 									type="button"
 									onClick={() => void deleteSegment(info.path)}
-									className="text-xs text-muted-foreground/70 underline-offset-2 hover:text-red-500 hover:underline"
+									className="text-xs text-muted-foreground underline-offset-2 hover:text-red-500 hover:underline"
 								>
 									Delete
 								</button>
@@ -570,7 +570,7 @@ export function AgentSection({
 							    open at a time (openSegment), so one shared
 							    status reads unambiguously. */}
 							{segmentStatus && (
-								<p className="text-xs text-muted-foreground/70" data-testid="segment-status">
+								<p className="text-xs text-muted-foreground" data-testid="segment-status">
 									{segmentStatus}
 								</p>
 							)}
@@ -896,7 +896,7 @@ export function AgentSection({
 
 			<SettingsGroup label="System prompts" testid="group-prompts">
 				{prompts === null ? (
-					<p className="text-xs text-muted-foreground/70">Loading prompt segments…</p>
+					<p className="text-xs text-muted-foreground">Loading prompt segments…</p>
 				) : (
 					<div className="flex flex-col gap-4">
 						{/* The owner's ruled order (2026-09-26): Teacher first,
@@ -905,11 +905,11 @@ export function AgentSection({
 						    order. */}
 						{sectionedSegments(prompts).map((section) => (
 							<div key={section.id} data-testid={`prompt-section-${section.id}`}>
-								<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground/70">
+								<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">
 									{section.label}
 								</p>
 								{section.hint && (
-									<p className="mb-1 text-xs text-muted-foreground/60">{section.hint}</p>
+									<p className="mb-1 text-xs text-muted-foreground">{section.hint}</p>
 								)}
 								<div className="flex flex-col gap-2">
 									{section.segments.map((info) => segmentRow(info))}

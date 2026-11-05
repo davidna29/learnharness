@@ -1304,6 +1304,10 @@ export function Chat({
 						if (renaming && e.target !== titleInputRef.current) titleInputRef.current?.blur();
 					}}
 				>
+					{/* The document's one h1: the visible title is an editable
+					    button, so screen readers still need the session name as
+					    the page heading (audit round, 2026-11-04). */}
+					<h1 className="sr-only">{titleText}</h1>
 					{renaming ? (
 						<>
 							<input
@@ -2385,7 +2389,7 @@ function DockOverlay({
 							claim={revealPending}
 						/>
 					)}
-					<div ref={shellRef} className="pointer-events-auto overflow-hidden rounded-2xl border bg-card shadow-lg">
+					<div ref={shellRef} className="pointer-events-auto overflow-hidden rounded-2xl border bg-card shadow-lg focus-within:border-ring/70">
 						{/* Include descendant margins (notably practice thinking's
 						    bottom margin) in the natural content measurement. */}
 						<div

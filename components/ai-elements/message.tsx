@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { cjk } from "@streamdown/cjk";
-import { code } from "@streamdown/code";
+import { createCodePlugin } from "@streamdown/code";
 import { createMathPlugin } from "@streamdown/math";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -346,12 +346,20 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 // `code` override intercepts mermaid fences and renders via
 // components/mermaid-render.ts — streamdown's internal mermaid machinery
 // (the plugin entry + the `mermaid` prop) is retired with it.
+// Code contrast (audit round, 2026-11-04): the stock github-dark palette
+// put keywords/strings below 4.5:1 on the app's darker code well. The
+// high-contrast GitHub dark theme keeps the same register while clearing
+// WCAG AA for syntax text.
+const highContrastCode = createCodePlugin({
+  themes: ["github-light-high-contrast", "github-dark-high-contrast"],
+});
+
 export const streamdownPlugins = {
   cjk: {
     ...cjk,
     remarkPluginsAfter: [...cjk.remarkPluginsAfter, remarkBreaks],
   },
-  code,
+  code: highContrastCode,
   math: createMathPlugin({ singleDollarTextMath: true }),
 } as unknown as PluginConfig;
 

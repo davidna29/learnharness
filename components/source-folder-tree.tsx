@@ -186,7 +186,7 @@ export function SourceFolderTree<T extends TreeSource>({ groups, directory, quer
 						ref={(el) => { if (el) el.indeterminate = entryCheck?.indeterminate ?? (!empty && selectedCount > 0 && selectedCount < members.length); }}
 						onChange={(e) => { if (entryCheck || empty) onToggleFolder(folder.id, e.target.checked); else onToggleNodes(members, e.target.checked); }} />
 					<button type="button" aria-expanded={open} aria-label={`Expand folder ${folder.name}`} data-testid={`folder-toggle-${folder.id}`}
-						onClick={() => onToggleExpanded(folder.id)} className="flex h-5 w-3.5 shrink-0 items-center justify-center text-muted-foreground/70">
+						onClick={() => onToggleExpanded(folder.id)} className="flex h-5 w-3.5 shrink-0 items-center justify-center text-muted-foreground">
 						<ChevronRightIcon className={`size-3.5 ${open ? "rotate-90" : ""}`} />
 					</button>
 					<button type="button" data-source-icon data-testid={`folder-icon-${folder.id}`} aria-expanded={open} aria-label={`Expand folder ${folder.name}`}

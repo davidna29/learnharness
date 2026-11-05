@@ -218,7 +218,7 @@ The form language is drafting-tool geometry: compact rectangles with gentle corn
 
 Borders are always 1px. Dashed 1px edges carry a specific meaning: an option that is not a normal answer ("don't know" / "other"). Selected states change the border to Bone White and the fill to Charcoal; they do not add a second border or a glow ring.
 
-Focus follows the same logic. The app removes the browser's default outline globally and lets surfaces carry their own hover, active, and selected affordances; keyboard-only traversal inside the dock uses local ring utilities. Focus is never communicated by color alone — it always pairs a border or fill shift with the control's existing shape.
+Focus follows the same logic. Pointer focus stays quiet; keyboard focus-visible gets a thin 1px Ash ring (outline-offset 1px) from the base layer, while components with their own ring utilities (buttons, inputs, dock rows) keep those local rings. Focus is never communicated by color alone — it always pairs a border or fill shift with the control's existing shape.
 
 **The Two Silhouettes Rule.** Content is a rounded rectangle (12–16px). Controls that float over the canvas are a pill or an 8px-radius icon square. Circles belong to radios, selection dots, and avatars — never to content containers.
 
@@ -289,6 +289,7 @@ Focus follows the same logic. The app removes the browser's default outline glob
 - **Do** use hue only as a 15% verdict tint or a solid status dot/text, never as decoration.
 - **Do** animate state with 120–200ms ease-out fades and 4–6px rises; honor `prefers-reduced-motion`.
 - **Do** keep the composer, dock, and transcript on the same 46rem column.
+- **Do** give every keyboard-focusable control a visible 1px Ash focus-visible ring; pointer focus stays quiet.
 
 ### Don't:
 - **Don't** introduce a brand hue, gradient, neon glow, or colored primary button.
@@ -298,6 +299,6 @@ Focus follows the same logic. The app removes the browser's default outline glob
 - **Don't** set reading text below 16px or labels below 11px.
 - **Don't** use pill shapes for content cards; pills are for floating metadata and compact canvas controls.
 - **Don't** use color to mark lesson phases or to decorate the graph; phase color-coding is retired and state belongs to motion and tone.
-- **Don't** restore a global browser focus outline; use border/tone state and the local keyboard rings the dock already provides.
+- **Don't** rely on a heavy browser-default focus outline; keyboard focus is the 1px Ash ring (components may keep their local rings).
 - **Don't** let code blocks or tables rebuild their own header chrome; they melt into the message as a single quiet block.
 - **Don't** add a fourth surface gray beyond ground, panel, hover, and the recessed code well.

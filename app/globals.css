@@ -22,9 +22,21 @@
    session lit up when the quiz's ←/→ were pressed). Surfaces carry their
    own hover/active/selected affordances; the dock's keyboard walk uses
    its own ring utilities, unaffected by an outline reset. */
-*:focus,
-*:focus-visible {
-	outline: none;
+/* Focus (audit round, 2026-11-04): pointer focus stays quiet, but a
+   keyboard focus-visible ring is mandatory — the app previously removed
+   every outline and relied on hover/selected tone alone. The base ring is
+   deliberately thin and Ash; components with their own `outline-none` +
+   ring utilities keep those (utilities win over the base layer). */
+@layer base {
+	*:focus,
+	*:focus-visible {
+		outline: none;
+	}
+
+	:where(button, a, input, textarea, select, [contenteditable="true"]):focus-visible {
+		outline: 1px solid var(--ring);
+		outline-offset: 1px;
+	}
 }
 
 /* Palette (owner's hexes): main #141414, raised #1C1C1C, edges #434343.
@@ -175,8 +187,13 @@
 	--color-ring: var(--ring);
 }
 
-* {
-	border-color: var(--color-border);
+/* Base default only: the layer lets component utilities (border-primary,
+   border-green-500, focus-within:border-primary/50) win again. The old
+   unlayered rule silently overrode every state border in the app. */
+@layer base {
+	* {
+		border-color: var(--color-border);
+	}
 }
 
 body {
