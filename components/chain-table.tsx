@@ -488,7 +488,7 @@ export function ChainTableBody({
 												    (white), not the old dim gray. A lonely chip reads
 												    as a standalone proposition (no glyphs at all);
 												    the row's aria-label keeps the plain-text form. */}
-												<span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-0.5 gap-y-1 text-[13px] leading-tight">
+												<span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-0.5 gap-y-1 text-[12.5px] leading-tight">
 													{memberIds.map((id, i) => {
 														const isConclusion = i === memberIds.length - 1;
 														return (
