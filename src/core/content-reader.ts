@@ -175,6 +175,24 @@ export function outsideTexComments(body: string, transform: (part: string) => st
 	out.push(transform(body.slice(from))); return out.join("");
 }
 
+/** A whole tool string can arrive as ONE undecoded JSON layer: line breaks
+ * are `\n` AND quotes/backslashes are `\"`/`\\`. The escaped fence is the
+ * evidence; only then do we decode the string exactly once. JSON.parse is
+ * the right inverse — it preserves the author's C escape (`\\n` becomes a
+ * literal `\n`) instead of turning every backslash into layout. A text with
+ * physical newlines cannot be a JSON string and is left to the per-fence
+ * fallback below. */
+const ESCAPED_FENCE = /(?:^|\\n)[ \t]{0,3}(?:`{3,}|~{3,})[^\n`\\]*(?:\\r\\n|\\n)/;
+function decodeJsonToolText(text: string): string | null {
+	if (/[\r\n]/.test(text) || !ESCAPED_FENCE.test(text)) return null;
+	try {
+		const decoded: unknown = JSON.parse(`"${text}"`);
+		return typeof decoded === "string" ? decoded : null;
+	} catch {
+		return null;
+	}
+}
+
 /** A fenced code block whose line breaks are still literal `\n` escapes —
  * a JSON string that was never decoded — parses on the raw single line as
  * ONE inline-code span, so ordinary recovery (which protects code) leaves
@@ -203,6 +221,9 @@ function decodeEscapedCodeFence(raw: string): string | null {
  * words win over the prefix `\\n`; code spans are protected except for a
  * whole escaped fence pair, whose frame recovery owns (above). */
 export function recoverDocumentLayout(text: string): string {
+	// Whole-string JSON layers win first: they restore quotes and C/LaTeX
+	// backslashes, not just the fence's own line breaks.
+	text = decodeJsonToolText(text) ?? text;
 	const spans = readContentSpans(text);
 	const candidates = spans.filter(span => span.kind !== "code").map(span => span.raw).join("\u0000");
 	const declared = new Set([

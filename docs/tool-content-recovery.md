@@ -22,6 +22,8 @@ Code and inline-code source ranges come from the rendering stack's CommonMark pa
 
 Some providers leave a fenced code block inside an undecoded JSON string, so its line breaks arrive as literal `\n`. On the raw single line CommonMark reads the whole fence as one inline-code span, and the code barrier would otherwise keep every escape visible — the question renders compressed with a raw language tag (issues #209, #467, #488). Recovery therefore decodes one whole fence pair's separators and line breaks before framing it as a block. Backslash runs keep JSON pairing: `\\n` stays a literal C `\n`; only an odd run becomes a newline. Inline code and spans that are not a complete fence pair are never decoded.
 
+The escaped fence also identifies a **whole-string JSON layer**: when the entire tool text still carries escaped newlines AND escaped quotes/backslashes, it is decoded once with JSON parsing before Markdown. This restores `"` in code and prose while preserving an author's C/LaTeX backslashes (`\\n` becomes a literal `\n`, `\\` one backslash). A text with physical newlines cannot be a JSON string and stays on the fence-only path. Stored tool arguments, option identities and answers remain untouched.
+
 ### Document escapes
 
 A literal two-character `\n` is different from a physical newline. Document-layout recovery requires evidence such as repeated document-escape candidates or a candidate alongside over-escaped known TeX commands. Complete known n-prefixed TeX words, including `\nu`, `\nabla`, `\neq` and declared n-prefixed macros, take precedence over interpreting their prefix as document layout. Code, genuine TeX comments and recognized path tokens are protected.
