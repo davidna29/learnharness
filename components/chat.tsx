@@ -89,12 +89,13 @@ import { currentUserThinkingOpen, setAllUserThinkingOpen } from "@/components/th
 
 /** One width for everything: transcript, cards, and the bottom blob share this column. */
 /**
- * Width tokens (wave-5 reskin, owner decision): the teaching PROSE spans the
- * full session width with a thin px-6 margin; the composer/question DOCK is
- * deliberately narrower (~46rem centered) per the reference. Same ELEMENT,
- * same place — width polish only.
+ * ONE reading column (critique round, 2026-11-04): the transcript, the
+ * composer and the question/practice dock share the same 46rem measure, so
+ * the eye never jumps between two centers and prose stays inside the
+ * 65–75ch band the design system promises. Code and tables scroll inside
+ * this column rather than widening the page.
  */
-const COLUMN = "mx-auto w-full max-w-none px-6";
+const COLUMN = "mx-auto w-full max-w-[46rem] px-4";
 const DOCK = "mx-auto w-full max-w-[46rem] px-4";
 // The DOCK container's fixed width (46rem) and the plan marginalia's
 // geometry (owner, plan-placement round): the bare diagram sits in the

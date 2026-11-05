@@ -264,8 +264,8 @@ Focus follows the same logic. The app removes the browser's default outline glob
 ### Docks / Composer — the signature surface
 - **Shape:** 16px radius, Graphite background, 1px Pencil border, 6px shell padding, Float shadow.
 - **Composer:** a transparent contenteditable field at 16px prose/1.25, a 40px-square Bone White send button at 10px radius, and a quiet stats row below with 11px mono pills.
-- **Question dock:** the same shell grows to 55dvh, holds the question prose, stacked option rows, the thinking field, and a confidence rail; its content swaps with a 120ms fade-and-rise while the shell height morphs separately.
-- **Law:** the dock replaces the composer in place. It never opens a modal or moves the transcript column.
+- **Question dock:** the same shell grows to `min(55dvh, 100% - 16rem)`. The statement, option rows, confidence rail and thinking field form ONE internally scrolling sheet; the Submit row stays pinned below it. Its content swaps with a 120ms fade-and-rise while the shell height morphs separately.
+- **Law:** the dock replaces the composer in place. It never opens a modal, and it shares the 46rem reading column with the transcript and composer.
 
 ### Tooltips
 - **Style:** Charcoal chip, 8px radius, 4px × 8px padding, 11px mono at 85% Bone White, no arrow.

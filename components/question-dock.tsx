@@ -559,10 +559,19 @@ function QuestionDockForm({
 
 	return (
 		<div ref={rootRef} data-testid="question-dock">
-			{/* Question area — scrolls internally if very tall; the bottom row stays put.
-			    Capped by the measured column (--dock-max-h; the old fixed 55dvh cut
-			    long questions short — owner round, 2026-10-05). */}
-			<div data-dock-scroll-area="" data-session-find-root="" className="max-h-[var(--dock-max-h,55dvh)] overflow-y-auto px-4 pt-3">
+			{/* The WHOLE question sheet scrolls — statement, options, confidence
+			    and thinking — while only the submit row stays pinned. Capping a
+			    short question area alone hid the options behind the fixed
+			    confidence/thinking chrome at laptop heights (critique round,
+			    2026-11-04). The measured cap still comes from --dock-max-h. */}
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					submit();
+				}}
+			>
+			<div data-dock-scroll-area="" data-session-find-root="" className="max-h-[var(--dock-max-h,55dvh)] overflow-y-auto">
+				<div className="px-4 pt-3">
 				<div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 					{toolName === "probe"
 						? "Probe"
@@ -831,20 +840,13 @@ function QuestionDockForm({
 			)}
 
 			{/* The learner's half of the dock — a composer TWIN: a labeled, bordered
-			    field with Submit docked inside, exactly like the chat composer's
-			    send. Select modes get "Your thinking" (Enter makes a newline — it
-			    is for dumping, soon dictated; the button submits); text mode
-			    keeps "Your answer" with Enter-to-submit. */}
-			<form
-				className="border-t border-border/60 p-1.5"
-				onSubmit={(e) => {
-					e.preventDefault();
-					submit();
-				}}
-			>
+			    field that scrolls with the sheet, while Submit is pinned below it.
+			    Select modes get "Your thinking" (Enter makes a newline — it is for
+			    dumping, soon dictated; the button submits); text mode keeps "Your
+			    answer" with Enter-to-submit. */}
 				<div
 					data-testid={qd.mode === "text" ? "answer-field" : "thinking-field"}
-					className="rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
+					className="m-1.5 rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
 				>
 					<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 						{qd.mode === "text" ? "Your answer" : "YOUR THINKING"}
@@ -911,19 +913,22 @@ function QuestionDockForm({
 							)}
 						/>
 					)}
-					<div className="flex items-center justify-between gap-2 p-1">
-						<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
-								{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
-						</span>
-						<Button
-							type="submit"
-							disabled={!canSubmit || compactionRunning}
-							className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
-						>
-							Submit answer
-						</Button>
-					</div>
 				</div>
+			</div>
+			<div className="border-t border-border/60 p-1.5">
+				<div className="flex items-center justify-between gap-2 p-1">
+					<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
+							{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
+					</span>
+					<Button
+						type="submit"
+						disabled={!canSubmit || compactionRunning}
+						className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
+					>
+						Submit answer
+					</Button>
+				</div>
+			</div>
 			</form>
 		</div>
 	);
