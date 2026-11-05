@@ -11,7 +11,7 @@
  */
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, chmodSync, cpSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { appendFileSync, chmodSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { networkInterfaces, hostname as osHostname } from "node:os";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
@@ -160,8 +160,22 @@ if (!existsSync(standaloneServer)) {
 	process.exit(1);
 }
 const staticFrom = join(root, ".next", "static");
+const staticTo = join(standalone, ".next", "static");
 if (existsSync(staticFrom)) {
-	cpSync(staticFrom, join(standalone, ".next", "static"), { recursive: true, force: true });
+	cpSync(staticFrom, staticTo, { recursive: true, force: true });
+}
+// Next serves CSS/JS/fonts from the bundle itself — a missing static dir
+// renders every page unstyled (HTTP 500 on _next/static/*). Fail loudly
+// instead of booting a broken server.
+let staticProbe = null;
+try {
+	staticProbe = readdirSync(join(staticTo, "chunks")).find((name) => name.endsWith(".css"));
+} catch {
+	staticProbe = null;
+}
+if (!staticProbe) {
+	console.error("Missing .next/standalone/.next/static after the copy — refuse to serve an unstyled app.");
+	process.exit(1);
 }
 const publicFrom = join(root, "public");
 if (existsSync(publicFrom)) {
@@ -203,6 +217,25 @@ next.on("exit", (code) => {
 
 try {
 	await waitFor(`http://127.0.0.1:${nextPort}/`);
+} catch (error) {
+	console.error(error instanceof Error ? error.message : error);
+	stop(1);
+}
+
+// Smoke test the bundled static assets before advertising the URL: a
+// standalone server without `.next/static` answers every CSS/JS request
+// with 500 and the phone renders an unstyled page.
+try {
+	const probe = await new Promise((resolve, reject) => {
+		const request = httpGet(`http://127.0.0.1:${nextPort}/_next/static/chunks/${staticProbe}`, (res) => {
+			res.resume();
+			if (res.statusCode === 200) resolve(true);
+			else reject(new Error(`/ _next/static responded ${res.statusCode}`));
+		});
+		request.on("error", reject);
+		request.setTimeout(5000, () => request.destroy(new Error("static smoke test timed out")));
+	});
+	if (!probe) throw new Error("static smoke test failed");
 } catch (error) {
 	console.error(error instanceof Error ? error.message : error);
 	stop(1);
