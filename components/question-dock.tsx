@@ -846,7 +846,7 @@ function QuestionDockForm({
 			    answer" with Enter-to-submit. */}
 				<div
 					data-testid={qd.mode === "text" ? "answer-field" : "thinking-field"}
-					className="m-1.5 rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/60"
+					className="m-1.5 rounded-lg border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/60"
 				>
 					<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 						{qd.mode === "text" ? "Your answer" : "YOUR THINKING"}
@@ -923,7 +923,7 @@ function QuestionDockForm({
 					<Button
 						type="submit"
 						disabled={!canSubmit || compactionRunning}
-						className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
+						className="ml-auto h-9 rounded-md px-3.5 text-sm font-medium"
 					>
 						Submit answer
 					</Button>

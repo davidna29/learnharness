@@ -189,7 +189,7 @@ A graphite monochrome with three signal hues held in reserve — the palette ear
 
 The shell is a fixed 288px sidebar and a single centered reading column. The main column is `max-w-[46rem]` (736px) with 16px gutters; the composer, the dock, and the transcript all share that column, so the conversation never jumps width. The sidebar auto-closes below 928px and restores when the window widens; there is no separate mobile layout because the shipped surface is the desktop app.
 
-Spacing follows a 4px base: 4, 8, 12, 16, 24, and 32px. Padding inside cards is 16px; option rows and nav rows use 8px × 12px; the composer shell uses 6px around a 2.5px-inset field. The top chrome band is 52px tall; on macOS the traffic-light gutter reserves 92px, divided by the live zoom factor so native controls and web chrome stay aligned at every zoom.
+Spacing follows a 4px base: 4, 8, 12, 16, 24, and 32px. Padding inside cards is 16px; option rows and nav rows use 8px × 12px; the composer shell uses 6px around a 2.5px-inset field. The top chrome band is 60px tall; on macOS the traffic-light gutter reserves 92px, divided by the live zoom factor so native controls and web chrome stay aligned at every zoom.
 
 The composer is anchored 20px above the bottom (`pb-5`). The question and practice docks may grow to 55dvh and scroll internally before the transcript collapses. Long questions, option lists, and thinking fields scroll inside the dock rather than pushing the page.
 
