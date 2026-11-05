@@ -30,6 +30,12 @@ The runner:
 
 Open `https://<Mac>.local:8443` (or the printed IP URL) on the phone.
 
+To keep the Mac browser path too, point the Herd proxy at the *same*
+server instead of running a second one: `herd proxy learnharness
+http://127.0.0.1:3100 --secure`. Then `https://learnharness.test` and the
+phone URLs share one production server and one `data/` root. Never run two
+Next servers against the same data root.
+
 `.env.local` is gitignored. Changing `LH_ACCESS_PASSWORD` logs every device
 out; restart the runner after editing it. `npm run lan -- --regen-cert`
 creates a new certificate after an IP change.
