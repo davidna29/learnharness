@@ -88,6 +88,26 @@ is trusted. Deepgram still needs its key configured in Settings → Providers.
 - **Logout loop / 401**: clear the site cookie, confirm `.env.local` has
   the intended password, restart the runner.
 
+## Ganti Wi-Fi
+
+Herd di Mac tidak ikut mati: `https://learnharness.test` berjalan di
+atas loopback + DNS lokal Herd, bukan lewat Wi-Fi. Yang berubah hanya sisi
+HP:
+
+- IP Mac hampir pasti berubah (dulu `10.10.10.161` via DHCP). **Pakai
+  `https://<Mac>.local:8443`** — nama ini ikut mesin ke jaringan mana pun
+  lewat mDNS dan sudah tercakup di sertifikat.
+- Jangan andalkan URL IP di jaringan baru: sertifikat terbit untuk IP
+  lama sehingga browser menolaknya (cert mismatch). Kalau butuh URL IP,
+  buat ulang sertifikatnya: `npm run lan -- --regen-cert`, atau jalankan
+  ulang runner untuk melihat IP baru.
+- HP dan Mac harus di SSID yang sama **tanpa client isolation atau
+  captive portal**; jaringan tamu yang mengisolasi klien memblokir
+  HP → Mac terlepas dari URL apa pun.
+- Trust CA di HP cukup sekali; password dan data tidak berubah.
+- PWA yang di-install dari URL `.local` tetap valid pindah jaringan
+  karena `start_url`-nya `/` (relatif terhadap host yang dibuka).
+
 ## Scope
 
 The LAN gate is a single-user convenience, not multi-user hosting. Do not
