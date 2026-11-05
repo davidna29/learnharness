@@ -40,6 +40,18 @@
         "canonical": "#2a2a2a",
         "tonalRamp": ["#0d0d0d", "#1c1c1c", "#2a2a2a", "#383838", "#474747", "#575757", "#8a8a8a", "#ececec"]
       },
+      "mark-white": {
+        "role": "brand",
+        "displayName": "Mark White",
+        "canonical": "#fff",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#383838", "#575757", "#8a8a8a", "#b5b5b5", "#d4d4d4", "#ffffff"]
+      },
+      "mark-gray": {
+        "role": "brand",
+        "displayName": "Mark Gray",
+        "canonical": "rgb(148,148,148)",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#383838", "#575757", "#737373", "#949494", "#b5b5b5", "#e6e6e6"]
+      },
       "signal-correct": {
         "role": "semantic",
         "displayName": "Correct Green",
@@ -77,6 +89,10 @@
       "ui": {
         "displayName": "UI / Chrome",
         "purpose": "JetBrains Mono controls, navigation, metadata, and dock labels."
+      },
+      "ui-compact": {
+        "displayName": "UI Compact",
+        "purpose": "Option rows, buttons, and dense chrome at 12.5px."
       },
       "body": {
         "displayName": "Reading Body",

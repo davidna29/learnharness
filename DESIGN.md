@@ -8,6 +8,8 @@ colors:
   ash: "#8d8d8d"
   pencil-line: "#434343"
   charcoal-hover: "#2a2a2a"
+  mark-white: "#fff"
+  mark-gray: "rgb(148,148,148)"
   signal-correct: "#22c55e"
   signal-incorrect: "#ef4444"
   signal-hint: "#f59e0b"
@@ -30,6 +32,11 @@ typography:
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.45
+  ui-compact:
+    fontFamily: "JetBrains Mono, ui-monospace, SFMono-Regular, monospace"
+    fontSize: "12.5px"
+    fontWeight: 400
+    lineHeight: 1.4
   body:
     fontFamily: "Source Sans 3, ui-sans-serif, system-ui, sans-serif"
     fontSize: "16px"
@@ -153,6 +160,7 @@ A graphite monochrome with three signal hues held in reserve — the palette ear
 - **Ash** (#8d8d8d): muted labels, placeholders, metadata, and secondary UI text. Roughly 5.6:1 on Obsidian.
 - **Pencil Line** (#434343): the 1px border, input edge, divider, and scrollbar thumb.
 - **The Graphite Stack Rule.** Surfaces climb one step: Obsidian ground → Graphite panel → Charcoal hover. Recessed content (code) may sit one step below ground; never introduce a fourth decorative gray.
+- **Mark White** (`#fff`) and **Mark Gray** (`rgb(148,148,148)`): the LH logo asset only. They are brand geometry, not UI tokens.
 
 ### Signal
 - **Correct Green** (#22c55e): correct verdicts and connected/success status. Used as a 15% tint behind text, or solid for a status dot.
@@ -173,6 +181,7 @@ A graphite monochrome with three signal hues held in reserve — the palette ear
 - **Display** (700, 32px/1.25, -0.025em): session titles and the chat header. CMU's only face is 700; the utility requests 900 so the variable fallback matches it.
 - **Headline** (700, 25px/1.3, -0.025em): settings and setup dialog titles.
 - **UI** (400, 14px/1.45): JetBrains Mono chrome — controls, navigation, metadata, dock labels.
+- **UI compact** (400, 12.5px/1.4): option rows, buttons, and dense chrome.
 - **Body** (400, 16px/1.5): teaching prose, tables, and long-form reading. Measure is the 46rem column, roughly 65–75 characters.
 - **Label** (400, 11px/1.4, 0.05em, uppercase): section eyebrows, filter labels, compact metadata. The mono legibility floor.
 - **Markdown headings** inherit the prose family and run at Black (900) via `--lh-heading-weight`; they are headings in a page, not chrome.
@@ -293,7 +302,7 @@ Focus follows the same logic. Pointer focus stays quiet; keyboard focus-visible 
 
 ### Don't:
 - **Don't** introduce a brand hue, gradient, neon glow, or colored primary button.
-- **Don't** use pure black or pure white; Obsidian and Bone White already carry the extremes.
+- **Don't** use pure black or pure white in UI surfaces; Obsidian and Bone White carry the extremes. The LH mark is the one authored exception.
 - **Don't** put shadows on transcript cards, option rows, navigation, or static panels.
 - **Don't** set serif type in controls or mono type in teaching prose.
 - **Don't** set reading text below 16px or labels below 11px.
