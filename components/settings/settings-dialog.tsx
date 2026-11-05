@@ -32,15 +32,17 @@ import {
 import { createPortal } from "react-dom";
 import { useBackdropDismiss } from "@/components/backdrop-dismiss";
 import {
+	CONTENT_LANGUAGES,
 	CURRENT_SETTINGS_VERSION,
 	type AgentSettings,
 	type AppearanceSettings,
 	type CompactionSettings,
+	type ContentLanguage,
 	type GraphSettings,
 	type UserSettings,
 } from "@/src/core";
 import { useAppearance } from "./appearance.tsx";
-import { SettingsSection } from "./controls.tsx";
+import { SettingsRow, SettingsSection, ThinSelect } from "./controls.tsx";
 import { UpdateSettings } from "./update-settings.tsx";
 import { AgentSection } from "./agent-section.tsx";
 import type { ModelsSettings } from "@/src/core";
@@ -52,6 +54,7 @@ import { AppearanceSection, GraphSection } from "./appearance-section.tsx";
 import { KeyboardSection } from "./keyboard-section.tsx";
 import { ChatGPTUIProvider } from "./chatgpt-connection.tsx";
 import { NativeSubscriptionUIProvider } from "./subscription-connections.tsx";
+import { CONTENT_LANGUAGE_LABELS } from "@/components/content-language";
 
 /** Owner (2026-09-20): hints earn their place — mechanics-explaining
  *  prose is out; only the keyboard note stays (storage location is a
@@ -366,6 +369,29 @@ export function SettingsDialogBody({
 											void write("general", { ...record.general, autoUpdate: on })
 										}
 									/>
+									<SettingsRow
+										label="Lesson language"
+										hint="Marks lesson text for screen readers and pronunciation. Interface chrome stays English."
+										testid="content-language-row"
+									>
+										<ThinSelect
+											value={record.general?.contentLanguage ?? "en"}
+											ariaLabel="Lesson language"
+											testid="content-language"
+											onChange={(next) =>
+												void write("general", {
+													...record.general,
+													contentLanguage: next as ContentLanguage,
+												})
+											}
+										>
+											{CONTENT_LANGUAGES.map((lang) => (
+												<option key={lang} value={lang}>
+													{CONTENT_LANGUAGE_LABELS[lang]}
+												</option>
+											))}
+										</ThinSelect>
+									</SettingsRow>
 								</SettingsSection>
 							)}
 							{active === "keys" && (

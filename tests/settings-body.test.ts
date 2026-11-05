@@ -24,6 +24,10 @@ describe("parseGeneralSettingsBody", () => {
 		const empty = parseGeneralSettingsBody({});
 		assert.ok(empty.ok);
 		assert.deepEqual(empty.settings, {});
+		const idLang = parseGeneralSettingsBody({ contentLanguage: "id" });
+		assert.ok(idLang.ok);
+		assert.deepEqual(idLang.settings, { contentLanguage: "id" });
+		assert.equal(parseGeneralSettingsBody({ contentLanguage: "xx" }).ok, false);
 		const on = parseGeneralSettingsBody({ autoUpdate: true });
 		assert.ok(on.ok);
 		assert.deepEqual(on.settings, { autoUpdate: true });
