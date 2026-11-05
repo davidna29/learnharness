@@ -79,6 +79,20 @@
 	--lh-heading-weight: 900;
 }
 
+/* Phone safe areas (mobile/LAN round, 2026-11-04): the PWA uses
+   viewport-fit=cover, so the notch/home-indicator bands need their own
+   padding. Desktop values are zero. */
+.lh-safe-top {
+	padding-top: env(safe-area-inset-top);
+}
+.lh-safe-top-bar {
+	height: calc(3.75rem + env(safe-area-inset-top));
+	padding-top: env(safe-area-inset-top);
+}
+.lh-safe-dock {
+	padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+}
+
 /* The app is always dark (<html class="dark">); mirror the same values so
    the block stays coherent under Tailwind's variant. */
 .dark {

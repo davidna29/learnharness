@@ -332,7 +332,7 @@ export function SessionRow({
 			onContextMenu={onContextMenu}
 			data-testid={kbdSelected ? "session-row-kbd" : "session-row"}
 			className={cn(
-				"group relative mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent",
+				"group relative mb-0.5 flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent sm:min-h-0",
 				active && "bg-accent",
 				kbdSelected && !active && "bg-accent/60 ring-1 ring-border",
 			)}
@@ -699,7 +699,7 @@ function SessionsSidebar() {
 				    Merged chrome (2026-09-17): in Electron this band is the
 				    window's drag surface and starts after the traffic lights
 				    (.lh-lights-gutter); in the browser those classes are inert. */}
-				<div className="lh-drag lh-lights-gutter flex items-center justify-between px-4 py-3">
+				<div className="lh-drag lh-lights-gutter lh-safe-top flex items-center justify-between px-4 py-3">
 					{/* The owner's mark (2026-09-17) replaces the "LH" text — still the
 					    home link, still vertically centered by the band's items-center.
 					    The 92px .lh-lights-gutter keeps it clear of the traffic lights
@@ -745,7 +745,7 @@ function SessionsSidebar() {
 						type="button"
 						data-testid="new-session"
 						onClick={() => void newSession()}
-						className="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+						className="flex min-h-11 w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:min-h-0"
 					>
 						<PlusIcon className="size-3" />
 						Teaching
@@ -755,7 +755,7 @@ function SessionsSidebar() {
 						type="button"
 						data-testid="new-session-practice"
 						onClick={() => router.push("/chat/new?mode=practice")}
-						className="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+						className="flex min-h-11 w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:min-h-0"
 					>
 						<DumbbellIcon className="size-3" />
 						Practice
@@ -817,7 +817,7 @@ function SessionsSidebar() {
 							}}
 							placeholder="Search…"
 							aria-label="Search sessions"
-							className="h-7 rounded-sm border-border bg-background pl-6 text-xs placeholder:text-muted-foreground"
+							className="h-7 rounded-sm border-border bg-background pl-6 text-xs placeholder:text-muted-foreground max-sm:h-9"
 						/>
 						<SearchIcon className="pointer-events-none absolute left-1.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
 					</span>
@@ -840,7 +840,7 @@ function SessionsSidebar() {
 							data-testid={`kind-filter-${f}`}
 							onClick={() => setFilter(f)}
 							className={cn(
-								"flex-1 rounded-sm px-2 py-1.5 text-[11px] uppercase tracking-wider transition-colors",
+								"flex-1 rounded-sm px-2 py-1.5 text-[11px] uppercase tracking-wider transition-colors max-sm:min-h-10",
 								kindFilter === f
 									? "bg-accent text-foreground"
 									: "text-muted-foreground hover:text-foreground",
@@ -901,7 +901,7 @@ function SessionsSidebar() {
 								type="button"
 								onClick={() => openSettings()}
 								data-testid="settings-entry"
-								className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+								className="flex min-h-11 items-center gap-1.5 rounded-md px-2 py-1.5 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:min-h-0"
 							>
 								<SettingsIcon className="size-3" />
 								Settings

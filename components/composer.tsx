@@ -212,7 +212,7 @@ export function Composer({
 						aria-label={busy && !canSend ? "Stop" : "Send"}
 						disabled={!busy && !canSend}
 						className={cn(
-							"flex size-10 shrink-0 items-center justify-center rounded-md transition-colors",
+							"flex size-10 shrink-0 items-center justify-center rounded-md transition-colors max-sm:size-11",
 							busy && !canSend
 								? "bg-secondary text-foreground hover:bg-accent"
 								: "bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40",

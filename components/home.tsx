@@ -209,7 +209,7 @@ export function Home({
 			    OVER the graph (no gradient: the graph runs clean under it to the
 			    bottom edge). Matches chat.tsx's DOCK geometry (max-w-[46rem]
 			    px-4) so nothing shifts when a session starts (owner). */}
-			<div className="pointer-events-none absolute inset-x-0 bottom-0 pb-5">
+			<div className="pointer-events-none absolute inset-x-0 bottom-0 lh-safe-dock">
 				<div className="pointer-events-auto mx-auto w-full max-w-[46rem] px-4">
 					{/* The pick bar (owner vision, 2026-10-04): the chain
 					    table's selection is PERSISTENT — picked
@@ -282,7 +282,7 @@ export function Home({
 						type="submit"
 						aria-label="Start session"
 						disabled={(!topic.trim() && !dictation.active) || busy}
-						className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground transition-colors hover:opacity-90 disabled:opacity-40"
+						className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground max-sm:size-11 transition-colors hover:opacity-90 disabled:opacity-40"
 					>
 						<CornerDownLeftIcon className="size-5" />
 					</button>

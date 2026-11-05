@@ -271,11 +271,11 @@ export function SettingsDialogBody({
 			aria-modal="true"
 			aria-label="Settings"
 			data-testid="settings-dialog"
-			className="settings-dialog-pop flex h-[620px] max-h-[85vh] w-[920px] max-w-[90vw] flex-col overflow-hidden rounded-md border border-border bg-card shadow-xl"
+			className="settings-dialog-pop flex h-[620px] max-h-[85vh] w-[920px] max-w-[90vw] flex-col overflow-hidden rounded-md border border-border bg-card shadow-xl max-sm:h-dvh max-sm:max-h-none max-sm:w-screen max-sm:max-w-none max-sm:rounded-none"
 			onClick={(e) => e.stopPropagation()}
 		>
 			{/* Header — the app's quiet CMU title language. */}
-			<header className="flex h-15 shrink-0 items-center gap-3 border-b border-border px-5">
+			<header className="lh-safe-top-bar flex shrink-0 items-center gap-3 border-b border-border px-5">
 				<h2 className="font-title text-2xl tracking-tight">Settings</h2>
 				<Hint
 						// Esc closes the dialog (its own listener) — surface it.
@@ -287,7 +287,7 @@ export function SettingsDialogBody({
 					type="button"
 					aria-label="Close settings"
 					data-testid="settings-close"
-					className="ml-auto size-7 rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+					className="relative ml-auto size-9 rounded-sm text-muted-foreground transition-colors after:absolute after:-inset-1 after:content-[''] hover:bg-accent hover:text-foreground"
 					onClick={onClose}
 				>
 					<svg
@@ -303,13 +303,13 @@ export function SettingsDialogBody({
 					</Hint>
 			</header>
 
-			<div className="flex min-h-0 flex-1">
+			<div className="flex min-h-0 flex-1 max-sm:flex-col">
 				{/* Left nav — text-only, the session-list mono language,
 					    active = bg-accent. */}
 				<nav
 					aria-label="Settings sections"
 					data-testid="settings-nav"
-					className="flex w-44 shrink-0 flex-col gap-1 border-r border-border p-2"
+					className="flex w-44 shrink-0 flex-col gap-1 border-r border-border p-2 max-sm:w-full max-sm:shrink-0 max-sm:flex-row max-sm:overflow-x-auto max-sm:border-r-0 max-sm:border-b"
 				>
 					{SECTIONS.map((s) => (
 						<button
@@ -317,7 +317,7 @@ export function SettingsDialogBody({
 							type="button"
 							data-testid={`settings-nav-${s.id}`}
 							aria-current={active === s.id}
-							className={`rounded-sm px-3 py-1.5 text-left font-ui text-sm transition-colors ${
+							className={`min-h-11 whitespace-nowrap rounded-sm px-3 py-1.5 text-left font-ui text-sm transition-colors sm:min-h-0 ${
 								active === s.id
 									? "bg-accent text-foreground"
 									: "text-muted-foreground hover:bg-accent hover:text-foreground"

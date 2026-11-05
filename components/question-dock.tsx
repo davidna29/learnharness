@@ -174,6 +174,8 @@ export function QuestionDock({
 /** A plain-text teaser of a question for the collapsed bar: unwrap math, flatten common LaTeX. */
 function teaserText(q: string): string {
 	return repairMathForDisplay(q)
+		.replace(/```[a-zA-Z0-9_-]*\n?([\s\S]*?)```/g, "$1") // fenced code: keep the source, drop the fence/tag
+		.replace(/`+/g, "") // inline code ticks
 		.replace(/\\\(([\s\S]*?)\\\)/g, "$1") // \(...\) inline math
 		.replace(/\\\[([\s\S]*?)\\\]/g, "$1") // \[...\] display math
 		.replace(/\$\$?([^$]*)\$\$?/g, "$1") // standard $...$/$$...$$ math
@@ -214,7 +216,7 @@ export function QuestionDockBar({
 				type="button"
 				data-testid="teach-check-reveal"
 				onClick={onExpand}
-				className="dock-variant flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent/40"
+				className="dock-variant flex min-h-11 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent/40"
 			>
 				<span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
 					<PlayIcon className="size-3.5" />
@@ -234,7 +236,7 @@ export function QuestionDockBar({
 			type="button"
 			data-testid="question-dock-bar"
 			onClick={onExpand}
-			className="dock-variant flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent/40"
+			className="dock-variant flex min-h-11 w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent/40"
 		>
 			<span className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 				{label ??
@@ -608,7 +610,7 @@ function QuestionDockForm({
 									data-kbdrow={i}
 									onClick={() => toggle(i)}
 									className={cn(
-										"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring",
+										"flex min-h-11 items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring sm:min-h-0",
 										isSel ? "border-primary bg-accent" : "hover:bg-accent/50",
 										i === kbdIdx && !isSel && "ring-1 ring-border bg-accent/40",
 									)}
@@ -656,7 +658,7 @@ function QuestionDockForm({
 								className={cn(
 									// Option-row layout + radio circle (owner); the dashed
 									// outline stays — this is the deliberate non-answer.
-									"flex items-start gap-3 rounded-lg border border-dashed px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring",
+									"flex min-h-11 items-start gap-3 rounded-lg border border-dashed px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring sm:min-h-0",
 									sel.dontKnow ? "border-primary text-foreground" : "text-muted-foreground",
 									kbdIdx === optionCount && !sel.dontKnow && "ring-1 ring-border bg-accent/40",
 								)}
@@ -683,7 +685,7 @@ function QuestionDockForm({
 								data-kbdrow={optionCount}
 								onClick={selectOther}
 								className={cn(
-									"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring",
+									"flex min-h-11 items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring sm:min-h-0",
 									sel.otherSelected ? "border-primary bg-accent" : "border-dashed hover:bg-accent/50",
 									kbdIdx === optionCount && !sel.otherSelected && "ring-1 ring-border bg-accent/40",
 								)}
@@ -923,7 +925,7 @@ function QuestionDockForm({
 					<Button
 						type="submit"
 						disabled={!canSubmit || compactionRunning}
-						className="ml-auto h-9 rounded-md px-3.5 text-sm font-medium"
+						className="ml-auto h-9 rounded-md px-3.5 text-sm font-medium max-sm:h-11"
 					>
 						Submit answer
 					</Button>
