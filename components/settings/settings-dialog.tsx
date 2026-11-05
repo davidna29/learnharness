@@ -55,6 +55,7 @@ import { KeyboardSection } from "./keyboard-section.tsx";
 import { ChatGPTUIProvider } from "./chatgpt-connection.tsx";
 import { NativeSubscriptionUIProvider } from "./subscription-connections.tsx";
 import { CONTENT_LANGUAGE_LABELS } from "@/components/content-language";
+import { LanSignOut } from "./lan-signout.tsx";
 
 /** Owner (2026-09-20): hints earn their place — mechanics-explaining
  *  prose is out; only the keyboard note stays (storage location is a
@@ -369,6 +370,7 @@ export function SettingsDialogBody({
 											void write("general", { ...record.general, autoUpdate: on })
 										}
 									/>
+									<LanSignOut />
 									<SettingsRow
 										label="Lesson language"
 										hint="Marks lesson text for screen readers and pronunciation. Interface chrome stays English."
