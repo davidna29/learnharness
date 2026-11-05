@@ -84,9 +84,10 @@ declare global {
 	}
 }
 
-const SidebarContext = createContext<{ open: boolean; toggle: () => void }>({
+const SidebarContext = createContext<{ open: boolean; toggle: () => void; narrow: boolean }>({
 	open: false,
 	toggle: () => {},
+	narrow: false,
 });
 
 export function useSidebar() {
@@ -105,7 +106,12 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 	// mismatch); the stored value is applied after mount.
 	const [open, setOpen] = useState(false);
 	const [narrow, setNarrow] = useState(false);
-	const [mounted, setMounted] = useState(false);
+	// Auto-close is a view state, not the learner's preference: crossing into
+	// a narrow window hides the sidebar, widening restores it, and a manual
+	// open while narrow is a drawer (optimize/adapt round, 2026-11-04).
+	const [autoClosed, setAutoClosed] = useState(false);
+	const narrowRef = useRef(false);
+	const renderedOpen = open && !autoClosed;
 
 	useEffect(() => {
 		// Electron shell detection (merged chrome, 2026-09-17): keys the
@@ -131,7 +137,6 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		// Default: open (first run introduces the sidebar).
 		setOpen(stored === null ? true : stored === "1");
-		setMounted(true);
 		return () => off?.();
 	}, []);
 
@@ -140,30 +145,47 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 	// Both this and the mount effect land before the first paint, so a
 	// narrow window never flashes the open sidebar on load.
 	useEffect(() => {
-		if (!IS_ELECTRON) return; // plain-browser tabs open freely
-		const onResize = () => setNarrow(window.innerWidth < SIDEBAR_AUTOCLOSE);
+		const onResize = () => {
+			const isNarrow = window.innerWidth < SIDEBAR_AUTOCLOSE;
+			if (isNarrow === narrowRef.current) return;
+			narrowRef.current = isNarrow;
+			setNarrow(isNarrow);
+			setAutoClosed(isNarrow);
+		};
 		onResize();
 		window.addEventListener("resize", onResize);
 		return () => window.removeEventListener("resize", onResize);
 	}, []);
 
+	// Escape closes an open narrow drawer before the app's abort/dictation
+	// chain sees it.
+	useEffect(() => {
+		if (!narrow || !renderedOpen) return;
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key !== "Escape") return;
+			e.preventDefault();
+			e.stopPropagation();
+			setAutoClosed(true);
+		};
+		document.addEventListener("keydown", onKeyDown, true);
+		return () => document.removeEventListener("keydown", onKeyDown, true);
+	}, [narrow, renderedOpen]);
+
 	const toggle = useCallback(() => {
-		// Opening while narrow (auto-closed, or the user's own closed-at-
-		// narrow): ask the shell to widen to the threshold — the resize
-		// listener flips `narrow` and the sidebar appears. The preference
-		// persists like any other open, so a restart at a narrow width
-		// still auto-restores when widened.
-		if (narrow && !open) {
-			localStorage.setItem(STORAGE_KEY, "0");
+		// A narrow drawer opens over the page; the auto-close state is view
+		// state, the persisted preference is the learner's choice.
+		if (narrow && autoClosed) {
+			setAutoClosed(false);
 			setOpen(true);
-			window.lh?.expandWindow();
+			localStorage.setItem(STORAGE_KEY, "1");
 			return;
 		}
 		setOpen((v) => {
-			localStorage.setItem(STORAGE_KEY, v ? "0" : "1");
-			return !v;
+			const next = !v;
+			localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
+			return next;
 		});
-	}, [narrow, open]);
+	}, [narrow, autoClosed]);
 
 	// ⌘B: the global shortcut dispatches kbdEventForAction("toggle-sidebar")
 	// and the context answers on exactly that name — the shared spelling
@@ -179,9 +201,8 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 	}, [toggle]);
 
 	return (
-		<SidebarContext.Provider value={{ open: open && !narrow, toggle }}>
-			{/* transitions gated on mount: no slide-in flash on page load */}
-			<div className={cn("flex h-dvh", mounted && "[&_.sidebar-motion]:transition-[width,margin,opacity]")}>{children}</div>
+		<SidebarContext.Provider value={{ open: renderedOpen, toggle, narrow }}>
+			<div className="flex h-dvh">{children}</div>
 		</SidebarContext.Provider>
 	);
 }
@@ -203,7 +224,7 @@ export function SidebarToggle() {
 	return (
 		<span
 			className={cn(
-				"sidebar-motion lh-no-drag relative flex h-9 shrink-0 overflow-hidden duration-200",
+				"lh-no-drag relative flex h-9 shrink-0 overflow-hidden",
 				open ? "w-0 -mr-3" : "w-9 mr-0 lh-closed-toggle",
 			)}
 		>
@@ -215,7 +236,10 @@ export function SidebarToggle() {
 				aria-hidden={open}
 				tabIndex={open ? -1 : 0}
 				onClick={toggle}
-				className={cn("sidebar-motion duration-200", open ? "pointer-events-none opacity-0" : "opacity-100")}
+				className={cn(
+					"relative transition-opacity duration-200 after:absolute after:-inset-1 after:content-['']",
+					open ? "pointer-events-none opacity-0" : "opacity-100",
+				)}
 			>
 				{/* Owner, round 6: size-4, SAME as the close glyph — the toggle
 				    must not grow when the sidebar is closed (it did: size-5 here).
@@ -390,7 +414,7 @@ export type SessionKindFilter = "teach" | "all" | "practice";
 const KIND_FILTER_KEY = "lh:session-kind-filter";
 
 function SessionsSidebar() {
-	const { open, toggle } = useSidebar();
+	const { open, toggle, narrow } = useSidebar();
 	const [chats, setChats] = useState<ChatListItem[] | null>(null);
 	const [query, setQuery] = useState("");
 	const [kindFilter, setKindFilter] = useState<SessionKindFilter>("all");
@@ -646,11 +670,31 @@ function SessionsSidebar() {
 	}, [open, pathname, refresh]);
 
 	return (
-		<aside
-			className={cn("sidebar-motion shrink-0 overflow-hidden duration-200", open ? "w-72" : "w-0")}
-			aria-hidden={!open}
-		>
-			<div className="flex h-full w-72 flex-col border-r bg-background">
+		<>
+			{/* Narrow: the sidebar is a drawer over the page, not a column that
+			    squeezes the reading measure. Wide: it stays in flow, switching
+			    instantly — no width/margin animation (optimize round). */}
+			{narrow && open && (
+				<button
+					type="button"
+					aria-label="Close sidebar"
+					onClick={toggle}
+					className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm"
+				/>
+			)}
+			<aside
+				aria-hidden={!open}
+				className={cn(
+					"bg-background",
+					narrow
+						? "fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-r shadow-2xl transition-transform duration-200 ease-out"
+						: "relative shrink-0 overflow-hidden",
+					narrow
+						? (open ? "translate-x-0" : "-translate-x-full pointer-events-none")
+						: (open ? "w-72" : "w-0"),
+				)}
+			>
+				<div className="flex h-full w-full flex-col border-r bg-background">
 				{/* LH wordmark — the owner's header; close toggle sits at the edge.
 				    Merged chrome (2026-09-17): in Electron this band is the
 				    window's drag surface and starts after the traffic lights
@@ -685,7 +729,7 @@ function SessionsSidebar() {
 							size="icon"
 							aria-label="Close sidebar"
 							onClick={toggle}
-							className="lh-no-drag"
+							className="lh-no-drag relative after:absolute after:-inset-1 after:content-['']"
 						>
 							<PanelLeftCloseIcon className="size-4" />
 						</Button>
@@ -773,7 +817,7 @@ function SessionsSidebar() {
 							}}
 							placeholder="Search…"
 							aria-label="Search sessions"
-							className="h-6 rounded-sm border-border bg-background pl-6 text-xs placeholder:text-muted-foreground"
+							className="h-7 rounded-sm border-border bg-background pl-6 text-xs placeholder:text-muted-foreground"
 						/>
 						<SearchIcon className="pointer-events-none absolute left-1.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
 					</span>
@@ -796,7 +840,7 @@ function SessionsSidebar() {
 							data-testid={`kind-filter-${f}`}
 							onClick={() => setFilter(f)}
 							className={cn(
-								"flex-1 rounded-sm px-2 py-1 text-[11px] uppercase tracking-wider transition-colors",
+								"flex-1 rounded-sm px-2 py-1.5 text-[11px] uppercase tracking-wider transition-colors",
 								kindFilter === f
 									? "bg-accent text-foreground"
 									: "text-muted-foreground hover:text-foreground",
@@ -941,6 +985,7 @@ function SessionsSidebar() {
 					onDeleted={onDeleted}
 				/>
 			</aside>
+		</>
 	);
 }
 

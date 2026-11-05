@@ -310,7 +310,7 @@ export function CoverageRing({ chatId, refreshKey = 0 }: { chatId: string; refre
 					aria-label="Knowledge graph coverage"
 					onClick={() => setOpen((o) => !o)}
 					aria-expanded={open}
-					className="relative flex size-5 cursor-pointer items-center justify-center transition-opacity hover:opacity-80"
+					className="relative flex size-5 cursor-pointer items-center justify-center transition-opacity after:absolute after:-inset-1.5 after:content-[''] hover:opacity-80"
 				>
 					{/* The donut: track + fill. The whole ring pulses while a run
 					    is in flight (motion = the working-state signal). */}
