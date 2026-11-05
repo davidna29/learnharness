@@ -79,3 +79,39 @@ dengan password gate + HTTPS (mkcert) + PWA.
 - Global `* { border-color }` HARUS di `@layer base`, kalau tidak semua
   `border-primary`/focus ring mati (pernah kejadian, diperbaiki).
 - Service worker: network-only, lewatkan `/api` dan `/_next` — JANGAN cache.
+
+## Fase A graph mobile — selesai (2026-11-05)
+- Chrome row: search jadi toggle ikon (controlled `mobileSearchOpen` untuk
+  ⌘K, uncontrolled fallback), panel full-width di bawah row; import +
+  chains + gear collapse jadi ikon 36px; testid baru `graph-search-toggle`,
+  `graph-search-panel`.
+- Settings = bottom sheet di HP (`max-sm:fixed inset-x-3 bottom-3`,
+  `max-h-70dvh`, scroll internal). Kartu detail: tombol close eksplisit
+  size-9 + provenance link min-h-11. Chain table: hit area + min-h-11 di
+  semua baris/kontrol. Coverage popover: `max-w-[calc(100vw-2rem)]`.
+- Test: pin SSR baru (toggle honesty, controlled open, trigger 36px) +
+  update pin chain-row law (`max-sm:min-h-11`). 3201 tests: 1 fail lama
+  (`subscription-auth` pi-ai ESM, tidak terkait).
+- Verifikasi browser HP (headless Chrome 390px, build produksi via LAN):
+  login pas, empty state jujur, chrome populated, panel search terbuka,
+  bottom sheet settings, chain table collapse+expand (row 55px), nol
+  console error, nol overflow. Detail card: KECUALI tap node — sim Fisika
+  + GL headless tidak bisa diandalkan (lihat jebakan baru); kode di-review,
+  seleksi tak tersentuh round ini. Verifikasi tap di iPhone fisik.
+- Follow-up terlihat (DI LUAR Fase A, jangan dikerjakan diam-diam):
+  pill model "muse-spark-1.3-contributor" wrap 3 baris + "xhigh" mepet
+  tepi di composer HP; counts chain table ("1 …") truncate di 390px.
+
+## Jebakan baru (terbukti 2026-11-05)
+- Tsc incremental bisa laporkan error basi — hapus `tsconfig.tsbuildinfo`
+  bila error menunjuk kode yang jelas sudah benar.
+- Screenshot canvas GL headless tidak deterministik: sim yang sudah
+  settle berhenti menggambar (buffer clear) + GPU process headless bisa
+  mati diam-diam (DOM/probe tetap jalan, nol console error). Gejala:
+  canvas hitam padahal chrome populated. Perbaikan: restart Chrome
+  headless; verifikasi utama lewat probe DOM + settle pendek (1.2–2.5 dtk
+  dari posisi tersebar), BUKAN screenshot canvas settle.
+- Harness CDP sekali-pakai ada di `/tmp/cdp-check.mjs` (emulasi mobile,
+  cookie auth, klik/tap, probe, screenshot). Sandbox via
+  `LH_DATA_DIR=/tmp/... node .next/standalone/server.js` di port 3102 —
+  JANGAN pakai data/ asli untuk seed uji; hapus salinan (berisi auth.json).
