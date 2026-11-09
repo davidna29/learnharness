@@ -305,12 +305,15 @@ export function ChainTableBody({
 			    close only. Search + close carve out with lh-no-drag (the mask
 			    law: later in the DOM). */}
 			<TopBar>
-				<span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
-					{chains.length} {chains.length === 1 ? "chain" : "chains"} · {nodes.length} {nodes.length === 1 ? "node" : "nodes"}
-				</span>
+			<span className="min-w-0 flex-1 truncate text-xs text-muted-foreground max-sm:flex-none">
+				{chains.length} {chains.length === 1 ? "chain" : "chains"} · {nodes.length} {nodes.length === 1 ? "node" : "nodes"}
+			</span>
 				{onOrganizationChange && <button type="button" aria-label="Add folder" data-testid="add-source-folder"
 					onClick={() => setCreatingFolder(true)} className="relative lh-no-drag rounded-lg p-2 text-muted-foreground after:absolute after:-inset-1.5 after:content-[''] hover:bg-accent"><FolderPlusIcon className="size-4" /></button>}
-				<div className="relative shrink-0">
+				{/* The wrapper shrinks on narrow screens (mobile round,
+			    2026-11-05): it — not the counts — absorbs the overflow.
+			    Desktop keeps its exact width via sm:min-w-56. */}
+			<div className="relative max-sm:min-w-0 max-sm:flex-1 sm:min-w-56">
 					<SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
 					<input
 						ref={searchRef}
@@ -320,7 +323,7 @@ export function ChainTableBody({
 						placeholder="Search nodes…"
 						aria-label="Search nodes"
 						spellCheck={false}
-						className="lh-no-drag h-8 w-56 rounded-lg border bg-background pl-8 pr-3 text-xs outline-none placeholder:text-muted-foreground focus:border-ring max-sm:h-11 max-sm:w-auto max-sm:min-w-0 max-sm:flex-1 max-sm:text-sm"
+						className="lh-no-drag h-8 w-56 rounded-lg border bg-background pl-8 pr-3 text-xs outline-none placeholder:text-muted-foreground focus:border-ring max-sm:h-11 max-sm:w-full max-sm:min-w-0 max-sm:text-sm"
 					/>
 				</div>
 			<button

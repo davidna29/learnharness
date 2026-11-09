@@ -115,3 +115,16 @@ dengan password gate + HTTPS (mkcert) + PWA.
   cookie auth, klik/tap, probe, screenshot). Sandbox via
   `LH_DATA_DIR=/tmp/... node .next/standalone/server.js` di port 3102 —
   JANGAN pakai data/ asli untuk seed uji; hapus salinan (berisi auth.json).
+
+## Rapi kecil HP (2026-11-05)
+- Pill model truncate di HP (`max-sm:max-w-20`), nama penuh di tooltip.
+  Bar stats `max-sm:gap-2 px-2`. Awalnya max-w-28 → overflow 421 karena
+  bar sudah di tepi; 20 + gap rapat = pas 390.
+- Counts chain table `flex-none` (tetap tampil penuh), WRAPPER search
+  yang menyusut (`max-sm:flex-1 min-w-0`, `sm:min-w-56` jaga desktop).
+  Akar masalah: wrapper `shrink-0` tidak pernah menyusut — counts yang
+  terpotong ("1 …") selama ini.
+- Pelajaran verifikasi: sandbox 3102 HARUS dibunuh by-port
+  (`lsof -tiTCP:3102 | xargs kill`) — cmdline-nya `next-server`, pola
+  pkill nama file tidak kena → verifikasi bisa jalan di build basi.
+- Full suite tetap 3196 + 1 fail lama (subscription-auth pi-ai ESM).
