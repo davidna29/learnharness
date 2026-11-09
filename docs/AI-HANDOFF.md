@@ -128,3 +128,13 @@ dengan password gate + HTTPS (mkcert) + PWA.
   (`lsof -tiTCP:3102 | xargs kill`) — cmdline-nya `next-server`, pola
   pkill nama file tidak kena → verifikasi bisa jalan di build basi.
 - Full suite tetap 3196 + 1 fail lama (subscription-auth pi-ai ESM).
+
+## Fase B dialog HP — audit (2026-11-05)
+- Model menu (w-352): placement MenuShell sudah clamp ke viewport
+  (terukur x=25, tepi kanan 377) — tanpa perubahan.
+- Delete dialogs: sudah `max-w-[calc(100vw-2rem)]` — tanpa perubahan.
+- Setup dialog: `max-w-[90vw]` — tanpa perubahan.
+- Settings dialog: full-screen di HP (`max-sm:w-screen`, disengaja).
+- Plan window: flow layout (null bila kosong) — tanpa perubahan.
+- SATU perbaikan: cheat sheet backdrop `p-4` — kartu 358px mengambang,
+  tidak lagi menempel tepi. Terverifikasi 390px, 17 baris muat.
