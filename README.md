@@ -76,6 +76,8 @@ See the [development guide](docs/development.md) for setup and checks, [architec
 
 Questions, bug reports, and feature requests: [GitHub Issues](https://github.com/amosblomqvist/learnharness/issues).
 
+Security vulnerabilities: report privately as described in [SECURITY.md](SECURITY.md), not in public issues.
+
 ## License
 
 [AGPL-3.0](LICENSE)

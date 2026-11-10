@@ -138,3 +138,21 @@ dengan password gate + HTTPS (mkcert) + PWA.
 - Plan window: flow layout (null bila kosong) — tanpa perubahan.
 - SATU perbaikan: cheat sheet backdrop `p-4` — kartu 358px mengambang,
   tidak lagi menempel tepi. Terverifikasi 390px, 17 baris muat.
+
+## Integrasi upstream A–C (2026-11-05)
+- Fakta divergensi: basis kita = upstream 958328c (4 Nov). Yang benar-benar
+  baru di upstream hanya 5 commit (rantai ke HEAD 8 Nov) — 25 lainnya sudah
+  ada di tree kita. Dua garis pisah dari base yang sama.
+- A (inline-code surface): port 1:1 — css, md-blocks, test pin. Hijau.
+- B (Practice prompt overrides): port 6 file — route + agent-section +
+  4 file test. Pre-image cocok semua; verifikasi browser: section
+  teacher/prober/practice/shared render berurutan, nol error.
+- C (SECURITY.md + pointer README + issue chooser): verbatim upstream.
+- DITOLAK dengan alasan: versi 0.5.0 (menyesatkan — kontennya tak ada di
+  kita; tree kita tetap 0.4.1), hint file-access (UI-nya tak ada di tree —
+  ikut batch folder-restriction Nov 3 yang tak pernah masuk basis kita).
+- F (rantai attachment) DITOLAK: butuh backport 4 commit, konflik dengan
+  composer/home/chat yang sudah kita ubah + beda wording, nilai rendah
+  untuk use-case HP (desktop-bridge-centric).
+- Wording "Import notes…" (kita) vs "Extract files…" (upstream) = divergensi
+  sadar; selaraskan hanya bila ada keputusan eksplisit.
