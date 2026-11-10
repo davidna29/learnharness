@@ -156,3 +156,21 @@ dengan password gate + HTTPS (mkcert) + PWA.
   untuk use-case HP (desktop-bridge-centric).
 - Wording "Import notes…" (kita) vs "Extract files…" (upstream) = divergensi
   sadar; selaraskan hanya bila ada keputusan eksplisit.
+
+## Merge upstream/main (da08cb5) — 2026-11-05
+- Push ke fork DITOLAK (403 untuk davidna29) → jalur berubah: merge ke
+  main lokal, push sebagai branch ke davidna29/learnharness, PR dari situ.
+- 9 file konflik, semua teresolusi: ours menang untuk wording sadar
+  ("Import notes…", empty state graph + minimal-home, paperclip di
+  composer HP tidak relevan) + focus-ring dock; upstream menang untuk
+  fitur (attachment chain, dimming empty-source, file-access UI).
+- Koreksi selama merge: `UploadIcon` vs `WaypointsIcon` (import), label
+  menu "Import notes", pin test wording (notes-import ×2, chrome ×1,
+  minimal-home ×1), satu baris transkripsi `sourceText: "r2"`.
+- Versi ikut naik 0.5.0 via merge (kontennya kini ada — bump jujur).
+- Paperclip di composer HP: inert oleh desain upstream (butuh desktop
+  bridge; onClick hanya jalan bila `desktop`). Kandidat fitur lanjutan:
+  upload file asli dari HP.
+- Verifikasi: tsc bersih, full suite 3553 + 1 fail lama (pi-ai ESM),
+  rebuild + LAN 200, screenshot 390px (empty state kita, composer +
+  paperclip muat, settings Practice 4 section berurutan).

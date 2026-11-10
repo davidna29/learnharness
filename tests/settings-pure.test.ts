@@ -253,6 +253,9 @@ describe("classifyKeys — the Keys section's two-group projection", () => {
 			"DEEPGRAM_API_KEY",
 			"TAVILY_API_KEY",
 			"BRAVE_API_KEY",
+			"EXA_API_KEY",
+			"FIRECRAWL_API_KEY",
+			"OLLAMA_API_KEY",
 		]);
 		assert.ok(out.toolRows[0]!.present);
 		assert.ok(!out.toolRows[1]!.present);
@@ -337,7 +340,7 @@ describe("sectionedSegments — actual per-agent prompt membership", () => {
 		],
 		practice: [
 			{ path: "practice/00-base.md", sourceText: "r1", overrideText: null, enabled: false, shared: false },
-			{ path: "practice/10-doctrine.md", sourceText: "practice custom", overrideText: "practice custom", enabled: true, shared: false },
+			{ path: "practice/10-doctrine.md", sourceText: "r2", overrideText: "practice custom", enabled: true, shared: false },
 			{ path: "shared/10-personality.md", sourceText: "s1", overrideText: "custom", enabled: true, shared: true },
 		],
 		teacher: [

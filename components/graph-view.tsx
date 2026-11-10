@@ -1532,9 +1532,9 @@ export function GraphView({
 					<div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
 						<WaypointsIcon className="size-10 opacity-40" strokeWidth={1.25} />
 						<div className="text-lg font-medium text-foreground">Knowledge graph</div>
-						<p className="max-w-sm text-sm">
-							Start a session or import notes to build your graph.
-						</p>
+						<div className="max-w-sm text-sm">
+							<p>Start a session or import notes to build your graph.</p>
+						</div>
 					</div>
 				</div>
 			) : (

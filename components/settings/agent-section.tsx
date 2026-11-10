@@ -26,9 +26,9 @@
  * Search engine (search wave, 2026-09-20, owner: no default — an engine
  * is live iff its key is present; with a key the engine AUTO-activates,
  * the explicit choice is only a preference between live engines): a row
- * in the Tools group, Tavily / Brave via the same shared-menu look, with
+ * in the Tools group, with the same shared-menu look and
  * the live reason line from /api/search. No engine key at all → the row
- * grays whole-row (a choice without a key would only BLOCK the other
+ * grays whole-row (a choice without a key would only BLOCK another
  * engine's auto-activation).
  *
  * Tools — the owner's final list (2026-09-19): research, demo, visual, pdf.
@@ -63,12 +63,15 @@ import type React from "react";
 import {
 	COMPACTION_THRESHOLD_FLOOR,
 	MODEL_SLOTS,
+	SEARCH_ENGINES,
 	resolveSettings,
+	isFileAccessFolder,
 	type AgentSettings,
 	type CompactionSettings,
 	type GraphSettings,
 	type ModelSlotName,
 	type ModelsSettings,
+	type SearchEngineId,
 } from "@/src/core";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import { prettyModel } from "@/components/usage-format";
@@ -85,9 +88,6 @@ const SLOT_META: Record<ModelSlotName, { label: string; roster: string }> = {
 	cheap: { label: "Cheap", roster: "The assistants that research, build demos, and grade your work" },
 	vision: { label: "Vision", roster: "The assistants that draw and read PDFs" },
 };
-
-/** The search engines this wave ships (src/core/search.ts) + their labels. */
-const SEARCH_ENGINES = ["tavily", "brave"] as const;
 
 /** The owner's final toggleable-tool list (confirm with the user before
  *  changing — the Teacher stream settled this 2026-09-19). */
@@ -111,6 +111,30 @@ type PromptRow = SegmentInfo & { usageHint?: string };
  *  Pure — exported for tests. */
 export function composeTool(agent: AgentSettings | undefined, id: string, on: boolean): AgentSettings {
 	return { ...agent, tools: { ...agent?.tools, [id]: on } };
+}
+
+/** A file-access folder entry the server will accept: absolute (POSIX or
+ *  Windows drive/UNC) or "~"-anchored. Pure — exported for tests. */
+export function isFolderEntry(folder: string): boolean { return isFileAccessFolder(folder); }
+
+/** The switch changes ONLY restriction, never discards saved folders. */
+export function composeFileRestriction(agent: AgentSettings | undefined, restricted: boolean): AgentSettings {
+	return { ...agent, fileAccess: { restricted, folders: agent?.fileAccess?.folders ?? [] } };
+}
+
+/** Compose: add one allowed folder (trimmed; duplicates and invalid entries
+ *  are no-ops). Pure — exported for tests. */
+export function composeAddFolder(agent: AgentSettings | undefined, folder: string): AgentSettings {
+	const next = folder.trim();
+	const folders = agent?.fileAccess?.folders ?? [];
+	const restricted = agent?.fileAccess?.restricted ?? false;
+	if (!isFolderEntry(next) || folders.includes(next)) return { ...agent, fileAccess: { restricted, folders } };
+	return { ...agent, fileAccess: { restricted, folders: [...folders, next] } };
+}
+
+/** Removing the last folder NEVER changes the restriction switch. */
+export function composeRemoveFolder(agent: AgentSettings | undefined, folder: string): AgentSettings {
+	return { ...agent, fileAccess: { restricted: agent?.fileAccess?.restricted ?? false, folders: (agent?.fileAccess?.folders ?? []).filter((f) => f !== folder) } };
 }
 
 /** The quizzing mechanics (owner 2026-09-27): a segmented control, not a
@@ -168,7 +192,7 @@ export function composeSlotCacheRetention(models: ModelsSettings | undefined, sl
  *  Pure — exported for tests. */
 export function composeSearchEngine(
 	agent: AgentSettings | undefined,
-	engine: (typeof SEARCH_ENGINES)[number] | null,
+	engine: SearchEngineId | null,
 ): AgentSettings {
 	if (engine === null) {
 		if (!agent?.search) return { ...agent };
@@ -286,6 +310,7 @@ function MenuTrigger({
 
 export function AgentSection({
 	agent,
+	fileAccessError,
 	models,
 	graph,
 	compaction,
@@ -294,6 +319,7 @@ export function AgentSection({
 	onCompactionChange,
 }: {
 	agent: AgentSettings | undefined;
+	fileAccessError?: string | null;
 	/** The `models` section (slot pins — engine-level, PUT /api/settings/models). */
 	models: ModelsSettings | undefined;
 	/** The `graph` section — READ ONLY here: the graphTools row composes its
@@ -314,10 +340,12 @@ export function AgentSection({
 	const catalog = body?.models;
 	const slots = body?.slots;
 	/** The live search state (/api/search) — the row's reason line. */
+	const [folderInput, setFolderInput] = useState("");
+	const [folderError, setFolderError] = useState<string | null>(null);
 	const [search, setSearch] = useState<{ available: boolean; engine: string | null; reason: string } | null>(null);
 	/** Which search engines have a key (/api/keys) — the no-keys-anywhere
 	 *  state grays the row; per-engine marks ride the menu rows. */
-	const [engineKeys, setEngineKeys] = useState<Partial<Record<(typeof SEARCH_ENGINES)[number], boolean>>>({});
+	const [engineKeys, setEngineKeys] = useState<Partial<Record<SearchEngineId, boolean>>>({});
 	const [prompts, setPrompts] = useState<PromptView | null>(null);
 	const [openSegment, setOpenSegment] = useState<string | null>(null);
 	const [segmentDraft, setSegmentDraft] = useState<Record<string, string>>({});
@@ -366,9 +394,8 @@ export function AgentSection({
 		fetch("/api/keys")
 			.then((r) => r.json())
 			.then((body: { keys: { id: string; present: boolean }[] }) => {
-				const present: Partial<Record<(typeof SEARCH_ENGINES)[number], boolean>> = {};
-				for (const id of SEARCH_ENGINES) {
-					const envVar = id === "tavily" ? "TAVILY_API_KEY" : "BRAVE_API_KEY";
+				const present: Partial<Record<SearchEngineId, boolean>> = {};
+				for (const { id, envVar } of SEARCH_ENGINES) {
 					present[id] = body.keys.some((k) => k.id === envVar && k.present);
 				}
 				setEngineKeys(present);
@@ -460,7 +487,7 @@ export function AgentSection({
 
 		/** The search-engine menu row — label + the quiet live-key mark. */
 	const engineOption = (
-		id: (typeof SEARCH_ENGINES)[number] | "auto",
+		id: SearchEngineId | "auto",
 		label: string,
 		active: boolean,
 		live: boolean | null,
@@ -822,8 +849,50 @@ export function AgentSection({
 					</SettingsRow>
 				))}
 				{(() => {
+					const folders = agent?.fileAccess?.folders ?? [];
+					const restricted = Boolean(fileAccessError) || agent?.fileAccess?.restricted === true;
+					const effectiveAgent = fileAccessError ? { ...agent, fileAccess: { restricted: true, folders } } : agent;
+					const addFolder = () => {
+						const next = folderInput.trim();
+						if (!isFolderEntry(next)) { setFolderError("Enter an absolute path or ~/folder."); return; }
+						if (!folders.includes(next)) onSectionChange(composeAddFolder(effectiveAgent, next));
+						setFolderInput("");
+						setFolderError(null);
+					};
+					return (
+						<div data-testid="file-access-row" className="flex flex-col gap-2">
+							<SettingsRow label="File access" hint={!restricted
+								? "Broad local source access, except protected locations"
+								: folders.length ? "Only listed folders and subfolders."
+									: "Restricted: no folders allowed. Add a folder to enable access."}>
+								<div className="flex items-center gap-2 text-xs">
+									<span>Restrict to listed folders</span>
+									<Toggle checked={restricted} label="Restrict to listed folders" onChange={(on) => onSectionChange(composeFileRestriction(effectiveAgent, on))} />
+								</div>
+							</SettingsRow>
+							{fileAccessError && <p role="alert" data-testid="file-access-config-error" className="text-xs text-red-500">{fileAccessError}</p>}
+							<div className="flex gap-2 pl-3">
+								<input value={folderInput} aria-label="Allowed folder path" data-testid="file-access-add" placeholder="Absolute path or ~/folder"
+									onChange={(event) => { setFolderInput(event.target.value); setFolderError(null); }}
+									onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFolder(); } }}
+									className="min-w-0 flex-1 rounded-sm border border-border bg-background px-2 py-1 font-ui text-xs" />
+								<button type="button" data-testid="file-access-add-button" disabled={!folderInput.trim()} onClick={addFolder} className="rounded-sm border border-border px-2 text-xs disabled:opacity-40">Add folder</button>
+							</div>
+							{folderError && <p role="alert" data-testid="file-access-input-error" className="pl-3 text-xs text-red-500">{folderError}</p>}
+							{folders.map((folder) => (
+								<div key={folder} data-testid="file-access-folder" className="flex items-center justify-between gap-4 pl-3 text-xs">
+									<span title={folder} className="min-w-0 truncate font-ui text-muted-foreground">{folder}</span>
+									<button type="button" aria-label={`Remove ${folder}`} data-testid="file-access-remove"
+										onClick={() => onSectionChange(composeRemoveFolder(effectiveAgent, folder))}
+										className="rounded-sm px-1.5 text-muted-foreground hover:text-foreground">Remove</button>
+								</div>
+							))}
+						</div>
+					);
+				})()}
+				{(() => {
 					const engine = agent?.search?.engine ?? null;
-					const anyKey = engineKeys.tavily === true || engineKeys.brave === true;
+					const anyKey = SEARCH_ENGINES.some(({ id }) => engineKeys[id] === true);
 					const open = openMenu?.target === "search";
 					return (
 						<SettingsRow
@@ -834,7 +903,7 @@ export function AgentSection({
 						>
 							<span ref={open ? menuAnchorRef : undefined} className="relative flex items-center gap-2">
 								<MenuTrigger
-									value={engine === "tavily" ? "Tavily" : engine === "brave" ? "Brave" : ""}
+									value={SEARCH_ENGINES.find(({ id }) => id === engine)?.label ?? ""}
 									emptyLabel="Automatic"
 									ariaLabel="Search engine"
 									testid="search-engine-trigger"
@@ -854,8 +923,8 @@ export function AgentSection({
 											onSectionChange(composeSearchEngine(agent, null));
 											setOpenMenu(null);
 										})}
-										{SEARCH_ENGINES.map((id) =>
-											engineOption(id, id === "tavily" ? "Tavily" : "Brave", engine === id, engineKeys[id] ?? false, () => {
+										{SEARCH_ENGINES.map(({ id, label }) =>
+											engineOption(id, label, engine === id, engineKeys[id] ?? false, () => {
 												onSectionChange(composeSearchEngine(agent, id));
 												setOpenMenu(null);
 											}),

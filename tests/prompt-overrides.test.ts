@@ -461,7 +461,7 @@ describe("Practice settings API and effective prompt loading", () => {
 		});
 	}
 
-	it("shared edits reach exactly their runtime members, never adding the teaching base to Practice", async () => {
+	it("shared edits reach exactly their runtime members, never adding the teaching base to Practice", () => {
 		const defaults = Object.fromEntries((["teacher", "prober", "practice"] as const).map((kind) => [kind, teacherAgent.composeInstructions(kind)]));
 		for (const segment of ["system-prompt.md", "shared/10-voice.md", "shared/20-question-tools.md"]) {
 			const text = `SYNTHETIC SHARED OVERRIDE ${segment}`;

@@ -15,8 +15,9 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GraphChromeRow } from "../components/graph-view.tsx";
+import { GraphChromeRow, GraphView } from "../components/graph-view.tsx";
 import type { GraphRenderSettings } from "../components/graph-canvas.ts";
+import { ServerEventsProvider } from "../components/server-events.tsx";
 
 /** Ref doubles — the SSR harness never attaches them. */
 const ref = { current: null };
@@ -38,12 +39,20 @@ describe("GraphChromeRow — the empty-graph ruling (owner, 2026-09-25)", () => 
 		const html = renderToStaticMarkup(createElement(GraphChromeRow, { ...PROPS, isEmpty: true }));
 		assert.ok(html.includes('data-testid="import-notes"'));
 		assert.ok(html.includes("Import notes…"));
+		assert.ok(html.includes("lucide-upload"));
+		assert.ok(!html.includes("lucide-waypoints"));
 		assert.ok(!html.includes("Search nodes…"), "search is a lie on an empty graph");
 		// the settings gear is the lucide-settings svg (tooltip wave: its old
 		// native title is gone — the styled tooltip carries the label now)
 		assert.ok(!html.includes("lucide-settings"), "settings is a lie on an empty graph");
 		assert.ok(html.includes('data-testid="open-chain-table"'), "source inventory includes chats/files without graph nodes");
 		assert.equal(html.split("graph-chrome-fade-in").length - 1, 1, "only the inventory button has the appearance animation");
+	});
+
+	it("empty graph leads with sessions or notes import (paperclip guidance is desktop-only)", () => {
+		const html = renderToStaticMarkup(createElement(ServerEventsProvider, { children: createElement(GraphView, {}) }));
+		assert.ok(html.includes("<p>Start a session or import notes to build your graph.</p>"));
+		assert.ok(!html.includes("paperclip"));
 	});
 
 	it("POPULATED graph: all four render, the gated trio carries the fade", () => {

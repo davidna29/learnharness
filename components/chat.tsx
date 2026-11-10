@@ -2394,7 +2394,7 @@ function DockOverlay({
 							claim={revealPending}
 						/>
 					)}
-					<div ref={shellRef} className="pointer-events-auto overflow-hidden rounded-2xl border bg-card shadow-lg focus-within:border-ring/70">
+					<div ref={shellRef} data-attachment-composer="" className="pointer-events-auto overflow-hidden rounded-2xl border bg-card shadow-lg focus-within:border-ring/70">
 						{/* Include descendant margins (notably practice thinking's
 						    bottom margin) in the natural content measurement. */}
 						<div
