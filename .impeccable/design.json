@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T00:00:00.000Z",
+  "title": "Design System: LearnHarness",
+  "extensions": {
+    "colorMeta": {
+      "obsidian-ground": {
+        "role": "neutral",
+        "displayName": "Obsidian Ground",
+        "canonical": "#141414",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#2a2a2a", "#383838", "#474747", "#575757", "#8a8a8a", "#ececec"]
+      },
+      "graphite-panel": {
+        "role": "neutral",
+        "displayName": "Graphite Panel",
+        "canonical": "#1c1c1c",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#2a2a2a", "#383838", "#474747", "#575757", "#8a8a8a", "#ececec"]
+      },
+      "bone-white": {
+        "role": "primary",
+        "displayName": "Bone White",
+        "canonical": "#e6e6e6",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#383838", "#575757", "#8a8a8a", "#b5b5b5", "#d4d4d4", "#f2f2f2"]
+      },
+      "ash": {
+        "role": "neutral",
+        "displayName": "Ash",
+        "canonical": "#8d8d8d",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#383838", "#575757", "#737373", "#8d8d8d", "#b5b5b5", "#e6e6e6"]
+      },
+      "pencil-line": {
+        "role": "neutral",
+        "displayName": "Pencil Line",
+        "canonical": "#434343",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#2a2a2a", "#434343", "#575757", "#737373", "#a3a3a3", "#e6e6e6"]
+      },
+      "charcoal-hover": {
+        "role": "neutral",
+        "displayName": "Charcoal Hover",
+        "canonical": "#2a2a2a",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#2a2a2a", "#383838", "#474747", "#575757", "#8a8a8a", "#ececec"]
+      },
+      "mark-white": {
+        "role": "brand",
+        "displayName": "Mark White",
+        "canonical": "#fff",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#383838", "#575757", "#8a8a8a", "#b5b5b5", "#d4d4d4", "#ffffff"]
+      },
+      "mark-gray": {
+        "role": "brand",
+        "displayName": "Mark Gray",
+        "canonical": "rgb(148,148,148)",
+        "tonalRamp": ["#0d0d0d", "#1c1c1c", "#383838", "#575757", "#737373", "#949494", "#b5b5b5", "#e6e6e6"]
+      },
+      "signal-correct": {
+        "role": "semantic",
+        "displayName": "Correct Green",
+        "canonical": "#22c55e",
+        "tonalRamp": ["#052e16", "#14532d", "#166534", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#bbf7d0"]
+      },
+      "signal-incorrect": {
+        "role": "semantic",
+        "displayName": "Incorrect Red",
+        "canonical": "#ef4444",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fecaca"]
+      },
+      "signal-hint": {
+        "role": "semantic",
+        "displayName": "Hint Amber",
+        "canonical": "#f59e0b",
+        "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fde68a"]
+      },
+      "destructive": {
+        "role": "semantic",
+        "displayName": "Destructive",
+        "canonical": "oklch(0.704 0.191 22.216)",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fecaca"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Session titles and the chat header; CMU Serif announces the page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Settings and setup dialog titles."
+      },
+      "ui": {
+        "displayName": "UI / Chrome",
+        "purpose": "JetBrains Mono controls, navigation, metadata, and dock labels."
+      },
+      "ui-compact": {
+        "displayName": "UI Compact",
+        "purpose": "Option rows, buttons, and dense chrome at 12.5px."
+      },
+      "body": {
+        "displayName": "Reading Body",
+        "purpose": "Teaching prose, tables, and long-form reading at 16px/1.5."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase 11px mono section eyebrows and compact metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "control",
+        "value": "0 1px 2px rgba(0, 0, 0, 0.05)",
+        "purpose": "Inputs and outline buttons at rest; a barely-there edge, not lift."
+      },
+      {
+        "name": "float",
+        "value": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+        "purpose": "Composer, floating chrome pills, node cards, update banner."
+      },
+      {
+        "name": "menu",
+        "value": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+        "purpose": "Popovers, dropdown menus, small dialogs."
+      },
+      {
+        "name": "dialog",
+        "value": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "purpose": "Keyboard reference and large modal surfaces."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "120ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Dock content swap and transcript card entry (fade plus 4px rise)."
+      },
+      {
+        "name": "state-standard",
+        "value": "150ms ease-out",
+        "purpose": "Settings dialog pop and compact state transitions."
+      },
+      {
+        "name": "chrome",
+        "value": "200ms ease-out",
+        "purpose": "Sidebar motion and graph chrome fade-in."
+      },
+      {
+        "name": "braille",
+        "value": "800ms linear",
+        "purpose": "The ten-frame braille spinner; the only perpetual motion, shown only while a turn is in flight."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "sidebar-autoclose", "value": "928px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled action: bone white on obsidian, 8px radius, compact mono label.",
+      "html": "<button class=\"ds-btn-primary\">Set up your models</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 8px 16px; border: 0; border-radius: 8px; background: var(--bone-white, #e6e6e6); color: var(--obsidian-ground, #141414); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; line-height: 1.4; white-space: nowrap; cursor: pointer; transition: opacity 150ms ease-out; } .ds-btn-primary:hover { opacity: 0.9; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.5); } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet chrome action: transparent, ash text, charcoal hover wash.",
+      "html": "<button class=\"ds-btn-ghost\">Chains</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 8px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ash, #8d8d8d); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; line-height: 1.4; cursor: pointer; transition: background-color 150ms ease-out, color 150ms ease-out; } .ds-btn-ghost:hover { background: var(--charcoal-hover, #2a2a2a); color: var(--bone-white, #e6e6e6); } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.5); }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Compact 24px mono search field with a Pencil hairline and a left icon inset.",
+      "html": "<label class=\"ds-input\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><path d=\"m21 21-4.34-4.34\"></path></svg><input type=\"search\" placeholder=\"Search…\" aria-label=\"Search sessions\" /></label>",
+      "css": ".ds-input { display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 12px 0 24px; border: 1px solid var(--pencil-line, #434343); border-radius: 8px; background: rgba(28, 28, 28, 0.3); color: var(--bone-white, #e6e6e6); position: relative; } .ds-input svg { position: absolute; left: 6px; color: var(--ash, #8d8d8d); } .ds-input input { width: 100%; min-width: 0; border: 0; outline: none; background: transparent; color: inherit; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.4; } .ds-input input::placeholder { color: var(--ash, #8d8d8d); } .ds-input:focus-within { border-color: var(--ash, #8d8d8d); box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.5); }"
+    },
+    {
+      "name": "Option Row",
+      "kind": "custom",
+      "refersTo": "option-row",
+      "description": "A quiz or probe answer row: 12px rectangle, hairline edge, charcoal fill plus bone edge when selected.",
+      "html": "<button class=\"ds-option ds-option-selected\"><span class=\"ds-radio\"><span class=\"ds-dot\"></span></span><span>Mercury</span></button><button class=\"ds-option\"><span class=\"ds-radio\"></span><span>Venus</span></button>",
+      "css": ".ds-option { display: flex; align-items: flex-start; gap: 12px; width: 100%; margin-top: 8px; padding: 8px 12px; border: 1px solid var(--pencil-line, #434343); border-radius: 12px; background: transparent; color: var(--bone-white, #e6e6e6); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.4; text-align: left; cursor: pointer; transition: background-color 120ms ease-out, border-color 120ms ease-out; } .ds-option:hover { background: rgba(42, 42, 42, 0.5); } .ds-option:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.5); } .ds-option-selected { background: var(--charcoal-hover, #2a2a2a); border-color: var(--bone-white, #e6e6e6); } .ds-radio { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-top: 1px; flex: 0 0 auto; border: 1px solid rgba(141, 141, 141, 0.4); border-radius: 9999px; } .ds-option-selected .ds-radio { border-color: var(--bone-white, #e6e6e6); background: var(--bone-white, #e6e6e6); } .ds-dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--obsidian-ground, #141414); }"
+    },
+    {
+      "name": "Transcript Card",
+      "kind": "card",
+      "refersTo": "transcript-card",
+      "description": "The flat graphite card that holds a question, problem, or answered check; no shadow.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-eyebrow\">Problem</div><p class=\"ds-card-text\">Prove that the sum of two even numbers is even.</p></article>",
+      "css": ".ds-card { width: 100%; padding: 16px; border: 1px solid var(--pencil-line, #434343); border-radius: 16px; background: var(--graphite-panel, #1c1c1c); color: var(--bone-white, #e6e6e6); } .ds-eyebrow { margin-bottom: 4px; color: var(--ash, #8d8d8d); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 1.4; letter-spacing: 0.05em; text-transform: uppercase; } .ds-card-text { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.5; }"
+    },
+    {
+      "name": "Verdict Chip",
+      "kind": "chip",
+      "refersTo": "verdict-chip-correct",
+      "description": "The only place hue is allowed in content: a 15% tint with solid hue text.",
+      "html": "<span class=\"ds-verdict ds-correct\">correct</span> <span class=\"ds-verdict ds-incorrect\">incorrect</span> <span class=\"ds-verdict ds-hint\">solved with hints</span>",
+      "css": ".ds-verdict { display: inline-block; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.4; } .ds-correct { background: rgba(34, 197, 94, 0.15); color: var(--signal-correct, #22c55e); } .ds-incorrect { background: rgba(239, 68, 68, 0.15); color: var(--signal-incorrect, #ef4444); } .ds-hint { background: rgba(245, 158, 11, 0.15); color: var(--signal-hint, #f59e0b); }"
+    },
+    {
+      "name": "Composer",
+      "kind": "input",
+      "refersTo": "composer",
+      "description": "The signature bottom shell: 16px graphite card, float shadow, transparent field and bone send square.",
+      "html": "<form class=\"ds-composer\"><div class=\"ds-composer-field\" contenteditable=\"true\" role=\"textbox\" aria-multiline=\"true\" data-placeholder=\"What do you want to learn?\"></div><button class=\"ds-send\" type=\"submit\" aria-label=\"Start session\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 4v7a4 4 0 0 1-4 4H4\"></path><path d=\"m9 10-5 5 5 5\"></path></svg></button></form>",
+      "css": ".ds-composer { display: flex; align-items: flex-end; gap: 6px; width: 100%; padding: 6px; border: 1px solid var(--pencil-line, #434343); border-radius: 16px; background: var(--graphite-panel, #1c1c1c); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); } .ds-composer-field { flex: 1; min-height: 40px; padding: 8px 10px; outline: none; color: var(--bone-white, #e6e6e6); font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.25; } .ds-composer-field:empty::before { content: attr(data-placeholder); color: var(--ash, #8d8d8d); pointer-events: none; } .ds-send { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex: 0 0 auto; border: 0; border-radius: 10px; background: var(--bone-white, #e6e6e6); color: var(--obsidian-ground, #141414); cursor: pointer; transition: opacity 150ms ease-out; } .ds-send:hover { opacity: 0.9; } .ds-send:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.5); }"
+    },
+    {
+      "name": "Tooltip Chip",
+      "kind": "chip",
+      "refersTo": "tooltip-chip",
+      "description": "A quiet charcoal label with the shortcut in parentheses; no arrow.",
+      "html": "<span class=\"ds-tooltip\">Dictate (⌘D)</span>",
+      "css": ".ds-tooltip { display: inline-block; padding: 4px 8px; border-radius: 8px; background: var(--charcoal-hover, #2a2a2a); color: rgba(230, 230, 230, 0.85); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 1.4; white-space: nowrap; }"
+    },
+    {
+      "name": "Code Block",
+      "kind": "custom",
+      "refersTo": "code-block",
+      "description": "A recessed inset well with a hairline edge and a hover copy corner; no header bar.",
+      "html": "<div class=\"ds-code\"><button class=\"ds-copy\" aria-label=\"Copy code\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\"></rect><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path></svg></button><pre><code>#include &lt;stdio.h&gt;\nint main(void) { return 0; }</code></pre></div>",
+      "css": ".ds-code { position: relative; padding: 12px 16px; border: 1px solid var(--pencil-line, #434343); border-radius: 12px; background: color-mix(in oklab, #141414 86%, black); color: var(--bone-white, #e6e6e6); } .ds-code pre { margin: 0; overflow-x: auto; } .ds-code code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.6; } .ds-copy { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 0; border-radius: 8px; background: transparent; color: rgba(141, 141, 141, 0.7); opacity: 0; cursor: pointer; transition: opacity 150ms ease-out, background-color 150ms ease-out; } .ds-code:hover .ds-copy, .ds-copy:focus-visible { opacity: 1; } .ds-copy:hover { background: var(--charcoal-hover, #2a2a2a); color: var(--bone-white, #e6e6e6); } .ds-copy:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.5); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Observatory",
+    "overview": "LearnHarness is a dark instrument for reading what someone understands. The screen is an obsidian field; the chrome is a thin, precise mono voice; the teaching text is set like a page under glass. Nothing glows for attention. Light is information: a bone-white action, a selected edge, a verdict. The interface stays quiet so the learner's reasoning, the question, and the graph remain the brightest things in the room. The register is editorial and austere rather than technical for its own sake. CMU Serif titles announce a session the way a plate announces an exhibit; JetBrains Mono labels operate the instrument; Source Sans 3 carries the reading. Surfaces are flat panes separated by 1px pencil lines, with shadow reserved for things that genuinely float above the page. Component feel is a tactile drafting tool: controls are compact, squared-off, and firm under the hand. Selection is a tone shift plus a bone-white edge, never a glow.",
+    "keyCharacteristics": [
+      "Obsidian ground, graphite panels, one step of tone per surface.",
+      "One accent only: bone white. Hue is reserved for verdicts and system status.",
+      "Three typographic voices: serif announces, mono operates, Source Sans 3 explains.",
+      "Hairline borders define every surface; floating shadows mark true z-lift.",
+      "A 4px rhythm and a 4/8/12/16px radius ladder.",
+      "Motion is state, not decoration: 120–200ms fades and rises."
+    ],
+    "rules": [
+      {
+        "name": "The One Light Rule",
+        "body": "Bone White is the only accent. Keep it under roughly 10% of any screen; its rarity is what makes it read as light rather than paint.",
+        "section": "colors"
+      },
+      {
+        "name": "The Graphite Stack Rule",
+        "body": "Surfaces climb one step: Obsidian ground → Graphite panel → Charcoal hover. Recessed content may sit one step below ground; never introduce a fourth decorative gray.",
+        "section": "colors"
+      },
+      {
+        "name": "The Verdict-Only Hue Rule",
+        "body": "Hue appears only for answer verdicts or system status. It never becomes a brand accent, a phase color, a gradient stop, or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Mono is chrome; Source Sans 3 is reading; CMU Serif is announcement. Never swap roles — no serif controls, no mono paragraphs, no prose in the sidebar chrome.",
+        "section": "typography"
+      },
+      {
+        "name": "The 11px Floor Rule",
+        "body": "No label, badge, or metadata text goes below 11px. Quiet comes from Ash, tracking, and case, not from shrinking the type.",
+        "section": "typography"
+      },
+      {
+        "name": "The 16px Reading Rule",
+        "body": "Teaching prose and tables stay at 16px. The reading surface is the product; the instrument around it may be 11–14px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Four-Pixel Rhythm Rule",
+        "body": "Every padding, margin, gap, and control height is a whole multiple of 4px. No hand-tuned exceptions.",
+        "section": "layout"
+      },
+      {
+        "name": "The 46rem Reading Rule",
+        "body": "Composer, dock, transcript, and empty-state summary share one 46rem column. A surface that changes the column width changes the reading rhythm and is out of system.",
+        "section": "layout"
+      },
+      {
+        "name": "The Floating-Only Shadow Rule",
+        "body": "If it does not overlap other content, it does not cast a shadow. Cards, rows, navigation, and panels stay flat.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "Elevation is a 1px Pencil line before it is ever a shadow. Thickening a border to 2px to signal emphasis is out of system; use tone or a bone-white edge instead.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Two Silhouettes Rule",
+        "body": "Content is a rounded rectangle (12–16px). Controls that float over the canvas are a pill or an 8px-radius icon square. Circles belong to radios, selection dots, and avatars — never to content containers.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do keep Obsidian #141414 as the ground and Graphite #1c1c1c as the panel; every raised surface moves exactly one step.",
+      "Do use Bone White #e6e6e6 as the only accent and keep its coverage under roughly 10% of any screen.",
+      "Do set teaching prose and tables at 16px/1.5, labels at 11px uppercase mono with 0.05em tracking, and titles in CMU Serif.",
+      "Do stay on the 4px spacing rhythm and the 4/8/12/16px radius ladder.",
+      "Do separate surfaces with 1px Pencil hairlines before reaching for a shadow.",
+      "Do reserve shadows for elements that overlap other content (composer, menus, dialogs, node cards).",
+      "Do use hue only as a 15% verdict tint or a solid status dot/text, never as decoration.",
+      "Do animate state with 120–200ms ease-out fades and 4–6px rises; honor prefers-reduced-motion.",
+      "Do keep the composer, dock, and transcript on the same 46rem column."
+    ],
+    "donts": [
+      "Don't introduce a brand hue, gradient, neon glow, or colored primary button.",
+      "Don't use pure black or pure white; Obsidian and Bone White already carry the extremes.",
+      "Don't put shadows on transcript cards, option rows, navigation, or static panels.",
+      "Don't set serif type in controls or mono type in teaching prose.",
+      "Don't set reading text below 16px or labels below 11px.",
+      "Don't use pill shapes for content cards; pills are for floating metadata and compact canvas controls.",
+      "Don't use color to mark lesson phases or to decorate the graph; phase color-coding is retired and state belongs to motion and tone.",
+      "Don't restore a global browser focus outline; use border/tone state and the local keyboard rings the dock already provides.",
+      "Don't let code blocks or tables rebuild their own header chrome; they melt into the message as a single quiet block.",
+      "Don't add a fourth surface gray beyond ground, panel, hover, and the recessed code well."
+    ]
+  }
+}

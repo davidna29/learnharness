@@ -98,6 +98,31 @@ test("partial recovery cannot turn otherwise parseable TeX into a missing-argume
 	const source = math`$x\\frac{a}$`;
 	assert.equal(repairMathForDisplay(source), source);
 });
+test("escaped fenced code blocks recover as real blocks without decoding literal C escapes", () => {
+	const source = 'What does this print?\\n\\n```c\\n#include <stdio.h>\\nint main() {\\n  int x = 7 / 2;\\n  printf("%d\\\\n", x);\\n  return 0;\\n}\\n```\\n\\nChoose one.';
+	const expected = 'What does this print?\n\n```c\n#include <stdio.h>\nint main() {\n  int x = 7 / 2;\n  printf("%d\\n", x);\n  return 0;\n}\n```\n\nChoose one.';
+	assert.equal(repairMathForDisplay(source), expected);
+	assert.equal(repairMathForDisplay(expected), expected);
+	const isolated = "```python\\ndef solve(n):\\n    return n * 2\\n```";
+	assert.equal(repairMathForDisplay(isolated), "```python\ndef solve(n):\n    return n * 2\n```");
+	const box = "```csharp\\nclass Box { public int X; }\\n\\nvar b1 = new Box { X = 1 };\\nvar b2 = b1;\\nb2.X = 5;\\nb2 = new Box { X = 7 };\\nb2.X = 8;\\n\\nConsole.WriteLine(b1.X);\\n```";
+	assert.equal(repairMathForDisplay(box),
+		"```csharp\nclass Box { public int X; }\n\nvar b1 = new Box { X = 1 };\nvar b2 = b1;\nb2.X = 5;\nb2 = new Box { X = 7 };\nb2.X = 8;\n\nConsole.WriteLine(b1.X);\n```");
+	assert.equal(repairMathForDisplay('The escape `\\n` is literal.'), 'The escape `\\n` is literal.');
+});
+test("a whole JSON-encoded tool string decodes quotes and C/LaTeX backslashes once", () => {
+	const original = 'Perhatikan program C berikut:\n```c\nint y = 5.9;\nprintf("%d\\n", y);\n```\nApa output program tersebut?';
+	const raw = JSON.stringify(original).slice(1, -1);
+	assert.equal(repairMathForDisplay(raw), original);
+	assert.equal(repairMathForDisplay(original), original);
+	const exact = "Perhatikan program C berikut:\\n```c\\nint y = 5.9;\\nprintf(\\\"%d\\\", y);\\n```\\nApa output program tersebut?";
+	assert.equal(repairMathForDisplay(exact),
+		'Perhatikan program C berikut:\n```c\nint y = 5.9;\nprintf("%d", y);\n```\nApa output program tersebut?');
+	const prose = 'He said "hi" and wrote `printf("%d", y);`.\n\n```c\nprintf("%d", y);\n```';
+	assert.equal(repairMathForDisplay(JSON.stringify(prose).slice(1, -1)), prose);
+	const mathText = 'Rumus $\\nu$ dan $\\nabla f$.\n\n```c\nprintf("%d", y);\n```';
+	assert.equal(repairMathForDisplay(JSON.stringify(mathText).slice(1, -1)), mathText);
+});
 test("legacy compatibility and recovery share code barriers, including tilde and indentation", () => {
 	for (const source of ["    " + math`\(x\) \n\n`, "\\[\n~~~tex\n" + math`\n\n \(x\)` + "\n\\]\n~~~"]) {
 		assert.equal(repairMathForDisplay(source), source);

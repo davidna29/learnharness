@@ -174,6 +174,8 @@ export function QuestionDock({
 /** A plain-text teaser of a question for the collapsed bar: unwrap math, flatten common LaTeX. */
 function teaserText(q: string): string {
 	return repairMathForDisplay(q)
+		.replace(/```[a-zA-Z0-9_-]*\n?([\s\S]*?)```/g, "$1") // fenced code: keep the source, drop the fence/tag
+		.replace(/`+/g, "") // inline code ticks
 		.replace(/\\\(([\s\S]*?)\\\)/g, "$1") // \(...\) inline math
 		.replace(/\\\[([\s\S]*?)\\\]/g, "$1") // \[...\] display math
 		.replace(/\$\$?([^$]*)\$\$?/g, "$1") // standard $...$/$$...$$ math
@@ -214,7 +216,7 @@ export function QuestionDockBar({
 				type="button"
 				data-testid="teach-check-reveal"
 				onClick={onExpand}
-				className="dock-variant flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent/40"
+				className="dock-variant flex min-h-11 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent/40"
 			>
 				<span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
 					<PlayIcon className="size-3.5" />
@@ -234,7 +236,7 @@ export function QuestionDockBar({
 			type="button"
 			data-testid="question-dock-bar"
 			onClick={onExpand}
-			className="dock-variant flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent/40"
+			className="dock-variant flex min-h-11 w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent/40"
 		>
 			<span className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 				{label ??
@@ -559,10 +561,19 @@ function QuestionDockForm({
 
 	return (
 		<div ref={rootRef} data-testid="question-dock">
-			{/* Question area — scrolls internally if very tall; the bottom row stays put.
-			    Capped by the measured column (--dock-max-h; the old fixed 55dvh cut
-			    long questions short — owner round, 2026-10-05). */}
-			<div data-dock-scroll-area="" data-session-find-root="" className="max-h-[var(--dock-max-h,55dvh)] overflow-y-auto px-4 pt-3">
+			{/* The WHOLE question sheet scrolls — statement, options, confidence
+			    and thinking — while only the submit row stays pinned. Capping a
+			    short question area alone hid the options behind the fixed
+			    confidence/thinking chrome at laptop heights (critique round,
+			    2026-11-04). The measured cap still comes from --dock-max-h. */}
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					submit();
+				}}
+			>
+			<div data-dock-scroll-area="" data-session-find-root="" className="max-h-[var(--dock-max-h,55dvh)] overflow-y-auto">
+				<div className="px-4 pt-3">
 				<div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 					{toolName === "probe"
 						? "Probe"
@@ -599,7 +610,7 @@ function QuestionDockForm({
 									data-kbdrow={i}
 									onClick={() => toggle(i)}
 									className={cn(
-										"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors",
+										"flex min-h-11 items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring sm:min-h-0",
 										isSel ? "border-primary bg-accent" : "hover:bg-accent/50",
 										i === kbdIdx && !isSel && "ring-1 ring-border bg-accent/40",
 									)}
@@ -647,7 +658,7 @@ function QuestionDockForm({
 								className={cn(
 									// Option-row layout + radio circle (owner); the dashed
 									// outline stays — this is the deliberate non-answer.
-									"flex items-start gap-3 rounded-lg border border-dashed px-3 py-2 text-left text-sm outline-none transition-colors",
+									"flex min-h-11 items-start gap-3 rounded-lg border border-dashed px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring sm:min-h-0",
 									sel.dontKnow ? "border-primary text-foreground" : "text-muted-foreground",
 									kbdIdx === optionCount && !sel.dontKnow && "ring-1 ring-border bg-accent/40",
 								)}
@@ -674,7 +685,7 @@ function QuestionDockForm({
 								data-kbdrow={optionCount}
 								onClick={selectOther}
 								className={cn(
-									"flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors",
+									"flex min-h-11 items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm outline-none transition-colors focus-visible:bg-accent/40 focus-visible:ring-1 focus-visible:ring-ring sm:min-h-0",
 									sel.otherSelected ? "border-primary bg-accent" : "border-dashed hover:bg-accent/50",
 									kbdIdx === optionCount && !sel.otherSelected && "ring-1 ring-border bg-accent/40",
 								)}
@@ -831,20 +842,13 @@ function QuestionDockForm({
 			)}
 
 			{/* The learner's half of the dock — a composer TWIN: a labeled, bordered
-			    field with Submit docked inside, exactly like the chat composer's
-			    send. Select modes get "Your thinking" (Enter makes a newline — it
-			    is for dumping, soon dictated; the button submits); text mode
-			    keeps "Your answer" with Enter-to-submit. */}
-			<form
-				className="border-t border-border/60 p-1.5"
-				onSubmit={(e) => {
-					e.preventDefault();
-					submit();
-				}}
-			>
+			    field that scrolls with the sheet, while Submit is pinned below it.
+			    Select modes get "Your thinking" (Enter makes a newline — it is for
+			    dumping, soon dictated; the button submits); text mode keeps "Your
+			    answer" with Enter-to-submit. */}
 				<div
 					data-testid={qd.mode === "text" ? "answer-field" : "thinking-field"}
-					className="rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
+					className="m-1.5 rounded-lg border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/60"
 				>
 					<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 						{qd.mode === "text" ? "Your answer" : "YOUR THINKING"}
@@ -904,26 +908,29 @@ function QuestionDockForm({
 							}}
 							placeholder="Why this answer? Whatever comes to mind."
 							className={cn(
-								"field-sizing-content lh-input max-h-48 w-full resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground/70",
+								"field-sizing-content lh-input max-h-48 w-full resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground",
 								// Phase-scaled prominence: teaching invites depth,
 								// probing stays quick.
 								phase === "teach" ? "min-h-[4.5rem]" : "min-h-10",
 							)}
 						/>
 					)}
-					<div className="flex items-center justify-between gap-2 p-1">
-						<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
-								{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
-						</span>
-						<Button
-							type="submit"
-							disabled={!canSubmit || compactionRunning}
-							className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
-						>
-							Submit answer
-						</Button>
-					</div>
 				</div>
+			</div>
+			<div className="border-t border-border/60 p-1.5">
+				<div className="flex items-center justify-between gap-2 p-1">
+					<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
+							{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
+					</span>
+					<Button
+						type="submit"
+						disabled={!canSubmit || compactionRunning}
+						className="ml-auto h-9 rounded-md px-3.5 text-sm font-medium max-sm:h-11"
+					>
+						Submit answer
+					</Button>
+				</div>
+			</div>
 			</form>
 		</div>
 	);

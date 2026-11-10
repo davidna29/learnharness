@@ -61,6 +61,9 @@ export function eventsResponse(): Response {
 				const { type, ...payload } = event;
 				frame(`event: ${type}\ndata: ${JSON.stringify(payload)}\n\n`);
 			});
+			// Flush the response headers immediately: some LAN/phone proxies
+			// hold a stream that has not produced a byte yet.
+			frame(": connected\n\n");
 			heartbeat = setInterval(() => frame(": ping\n\n"), 25_000);
 
 			teardown = stop;

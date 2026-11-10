@@ -148,11 +148,11 @@ it("graph menu clearly distinguishes extraction from lesson material, above unch
 	host = document.createElement("div"); document.body.appendChild(host); root = createRoot(host);
 	await act(async () => { root!.render(<NotesImportControl importing={false} onImportFiles={(files) => selected.push(files)} />); });
 	const trigger = host.querySelector<HTMLButtonElement>('[data-testid="import-notes"]')!;
-	assert.equal(trigger.textContent, "Extract files…");
-	assert.ok(trigger.querySelector(".lucide-waypoints"));
+	assert.equal(trigger.textContent, "Import notes…");
+	assert.ok(trigger.querySelector(".lucide-upload"));
 	await act(async () => { trigger.click(); });
 	const menu = host.querySelector('[role="menu"]')!;
-	assert.equal(menu.getAttribute("aria-label"), "Extract files into the graph");
+	assert.equal(menu.getAttribute("aria-label"), "Import notes");
 	assert.equal(menu.querySelector("p")!.textContent, "For lessons, attach material to a session instead.");
 	assert.equal(menu.getAttribute("aria-describedby"), menu.querySelector("p")!.id);
 	assert.ok(menu.className.includes("w-52"), "compact width wraps the short hint");
@@ -168,10 +168,10 @@ it("graph menu clearly distinguishes extraction from lesson material, above unch
 	assert.equal(folderClicks, 1);
 	assert.deepEqual(selected, [], "opening either picker itself never enqueues work");
 });
-it("busy graph action names extraction, and preserves the enabled queue picker", () => {
+it("busy graph action names importing, and preserves the enabled queue picker", () => {
 	const html = renderToStaticMarkup(<NotesImportControl importing onImportFiles={() => {}} />);
-	assert.match(html, /Extracting…/);
-	assert.doesNotMatch(html, /Import notes|Importing…|disabled/);
+	assert.match(html, /Importing…/);
+	assert.doesNotMatch(html, /Import notes…|Extract|disabled/);
 });
 
 it("alerts/notices stay plain and escaped", () => {

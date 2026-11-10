@@ -101,6 +101,21 @@ describe("the practice transcript cards", () => {
 		assert.doesNotMatch(html, /lucide-chevron|<button/, "nothing collapsible");
 	});
 
+	it("ProblemCard: an escaped code fence renders as a code block, not literal escapes (#488)", () => {
+		const statement = "```csharp\\nclass Box { public int X; }\\n\\nvar b1 = new Box { X = 1 };\\nConsole.WriteLine(b1.X);\\n```";
+		for (const html of [
+			renderToStaticMarkup(<ProblemCard part={part({ input: { statement } })} />),
+			renderToStaticMarkup(
+				<PracticeDock problemCallId="call_p1" input={{ statement }} expanded={true} onExpand={() => {}} onSubmit={() => {}} />,
+			),
+		]) {
+			assert.match(html, /data-streamdown="code-block"/);
+			assert.match(html, /data-language="csharp"/);
+			assert.ok(html.includes("class Box { public int X; }"));
+			assert.ok(!html.includes("\\n"), "no literal escape survives in the rendered statement");
+		}
+	});
+
 	it("ConcludeCard: the SOLUTION is the hero (the pose's modelSolution via part.reveal); the verdict rides below, low-key", () => {
 		const html = renderToStaticMarkup(
 			<ConcludeCard

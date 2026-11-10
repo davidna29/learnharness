@@ -332,9 +332,23 @@ export const ROLE_SLOT: Readonly<Record<ModelRole, ModelSlotName>> = {
 
 /** General settings — app-level behavior. Version DISPLAY and plans login
  *  live outside the record (package.json / auth.json) by owner decision. */
+/** The lesson-content languages the settings surface offers. The value is
+ *  a BCP-47 tag used verbatim on the prose containers' `lang` attribute;
+ *  the chrome stays English. */
+export const CONTENT_LANGUAGES = [
+	"en", "id", "es", "fr", "de", "pt", "it", "nl", "ja", "ko", "zh", "ar", "hi", "ru", "tr", "vi", "th",
+] as const;
+export type ContentLanguage = (typeof CONTENT_LANGUAGES)[number];
+export function isContentLanguage(value: unknown): value is ContentLanguage {
+	return typeof value === "string" && (CONTENT_LANGUAGES as readonly string[]).includes(value);
+}
+
 export interface GeneralSettings {
 	/** Automatic startup/24h update checks (default ON). Manual checks bypass this. */
 	autoUpdate?: boolean;
+	/** Language of the lesson text, for `lang`/screen-reader pronunciation.
+	 *  Missing = English. */
+	contentLanguage?: ContentLanguage;
 }
 
 /** One app-wide dictation preference, shared by every composer. */
@@ -514,7 +528,7 @@ export interface FactorySettings {
 
 export const FACTORY_SETTINGS: FactorySettings = {
 	version: CURRENT_SETTINGS_VERSION,
-	general: { autoUpdate: true },
+	general: { autoUpdate: true, contentLanguage: "en" },
 	dictation: { language: "en" },
 	appearance: {
 		mode: "dark",
@@ -560,6 +574,7 @@ function sanitizeGeneral(raw: Record<string, unknown>): GeneralSettings {
 	const out: GeneralSettings = {};
 	const autoUpdate = boolOrDrop(raw.autoUpdate);
 	if (autoUpdate !== undefined) out.autoUpdate = autoUpdate;
+	if (isContentLanguage(raw.contentLanguage)) out.contentLanguage = raw.contentLanguage;
 	return out;
 }
 

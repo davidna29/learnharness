@@ -4,6 +4,12 @@ import { useCallback, useEffect, useLayoutEffect, type RefObject } from "react";
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
+/** The dock may claim at most 55% of the viewport (dvh, measured from the
+ * live window) and must always leave 16rem of transcript above it — the
+ * reading surface is the product (critique round, 2026-11-04). */
+const DOCK_VIEWPORT_FRACTION = 0.55;
+const TRANSCRIPT_RESERVE = 16 * 16;
+
 export interface DockHeightMeasurements {
 	columnHeight: number;
 	/** Stats/toolbar and block padding, outside the scrolling viewport. */
@@ -16,10 +22,22 @@ export interface DockHeightMeasurements {
 	/** Null when collapsed, in chat mode, or showing malformed input. */
 	questionHeight: number | null;
 	questionPaddingHeight: number;
+	/** Optional ceiling for the whole dock block (viewport + toolbar).
+	 *  Absent in unit callers that test the column arithmetic alone. */
+	maxBlockHeight?: number;
+}
+
+/** The whole-dock ceiling: min(55dvh, column − 16rem), with a 320px
+ *  usable floor for short windows (never more than the column allows). */
+export function dockBlockCap(columnHeight: number, viewportHeight: number): number {
+	const dvh = viewportHeight > 0 ? Math.round(viewportHeight * DOCK_VIEWPORT_FRACTION) : Number.POSITIVE_INFINITY;
+	const columnCap = Math.max(columnHeight - TRANSCRIPT_RESERVE, 0);
+	const minUsable = Math.min(Math.max(columnHeight - 32, 0), 320);
+	return Math.max(Math.min(dvh, columnCap), minUsable);
 }
 
 export function dockHeightBudget(m: DockHeightMeasurements) {
-	const available = Math.max(m.columnHeight - 32, 0);
+	const available = Math.max(Math.min(m.columnHeight - 32, m.maxBlockHeight ?? m.columnHeight - 32), 0);
 	const viewportMaxHeight = Math.max(available - m.outsideHeight, 0);
 	const shellMaxHeight = Math.max(viewportMaxHeight - m.beforeShellHeight, 0);
 	const naturalHeight = m.beforeShellHeight + m.shellBorderHeight + m.contentHeight;
@@ -58,8 +76,13 @@ export function syncDockHeight(elements: DockHeightElements, expanded: boolean) 
 	const height = (el: HTMLElement) => el.getBoundingClientRect().height;
 	const shellStyle = getComputedStyle(shell);
 	const questionStyle = question ? getComputedStyle(question) : null;
+	// The whole dock (viewport + stats toolbar) is capped by the smaller of
+	// 55dvh and the column minus a 16rem transcript reserve. The gradient
+	// above the block is a fade, not dock chrome, and stays outside this cap.
+	const maxBlockHeight = dockBlockCap(column.clientHeight, window.innerHeight);
 	const budget = dockHeightBudget({
 		columnHeight: column.clientHeight,
+		maxBlockHeight,
 		outsideHeight: Math.max(height(block) - height(viewport), 0),
 		beforeShellHeight: Math.max(height(body) - height(shell), 0),
 		shellBorderHeight: pixels(shellStyle.borderTopWidth) + pixels(shellStyle.borderBottomWidth),

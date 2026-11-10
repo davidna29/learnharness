@@ -38,9 +38,9 @@ describe("GraphChromeRow — the empty-graph ruling (owner, 2026-09-25)", () => 
 	it("EMPTY graph: Import and source inventory render; canvas search/settings stay absent", () => {
 		const html = renderToStaticMarkup(createElement(GraphChromeRow, { ...PROPS, isEmpty: true }));
 		assert.ok(html.includes('data-testid="import-notes"'));
-		assert.ok(html.includes("Extract files…"));
-		assert.ok(html.includes("lucide-waypoints"));
-		assert.ok(!html.includes("lucide-upload"));
+		assert.ok(html.includes("Import notes…"));
+		assert.ok(html.includes("lucide-upload"));
+		assert.ok(!html.includes("lucide-waypoints"));
 		assert.ok(!html.includes("Search nodes…"), "search is a lie on an empty graph");
 		// the settings gear is the lucide-settings svg (tooltip wave: its old
 		// native title is gone — the styled tooltip carries the label now)
@@ -49,11 +49,10 @@ describe("GraphChromeRow — the empty-graph ruling (owner, 2026-09-25)", () => 
 		assert.equal(html.split("graph-chrome-fade-in").length - 1, 1, "only the inventory button has the appearance animation");
 	});
 
-	it("empty graph uses the same session-first lead and secondary material guidance as home", () => {
+	it("empty graph leads with sessions or notes import (paperclip guidance is desktop-only)", () => {
 		const html = renderToStaticMarkup(createElement(ServerEventsProvider, { children: createElement(GraphView, {}) }));
-		assert.ok(html.includes("<p>Start a session to begin learning.</p>"));
-		assert.ok(html.includes("Attach your material with the paperclip or drag and drop.</p>"));
-		assert.ok(!html.includes("import notes to build"));
+		assert.ok(html.includes("<p>Start a session or import notes to build your graph.</p>"));
+		assert.ok(!html.includes("paperclip"));
 	});
 
 	it("POPULATED graph: all four render, the gated trio carries the fade", () => {
@@ -75,5 +74,39 @@ describe("GraphChromeRow — the empty-graph ruling (owner, 2026-09-25)", () => 
 			createElement(GraphChromeRow, { ...PROPS, isEmpty: false, query: "zzz", noMatch: false }),
 		);
 		assert.ok(!quiet.includes("No matching nodes."));
+	});
+});
+
+describe("GraphChromeRow — the mobile chrome (graph round, 2026-11-06)", () => {
+	it("search collapses to an icon toggle on narrow screens — and only on a populated graph", () => {
+		const populated = renderToStaticMarkup(createElement(GraphChromeRow, { ...PROPS, isEmpty: false }));
+		assert.ok(populated.includes('data-testid="graph-search-toggle"'), "the toggle renders with nodes");
+		// the trailing sm:hidden (spaced, not max-sm:) lives on the toggle
+		// alone — desktop keeps the inline box untouched
+		assert.ok(populated.includes("hover:text-foreground sm:hidden"), "the toggle is narrow-screen-only");
+		const empty = renderToStaticMarkup(createElement(GraphChromeRow, { ...PROPS, isEmpty: true }));
+		assert.ok(!empty.includes('data-testid="graph-search-toggle"'), "no toggle on an empty graph (honesty)");
+	});
+
+	it("uncontrolled search defaults closed; the controlled prop opens the panel (⌘K on narrow screens)", () => {
+		const closed = renderToStaticMarkup(createElement(GraphChromeRow, { ...PROPS, isEmpty: false }));
+		assert.ok(closed.includes('aria-expanded="false"'), "the toggle starts collapsed");
+		assert.ok(closed.includes('data-testid="graph-search-panel"'), "the panel seam exists");
+		const open = renderToStaticMarkup(
+			createElement(GraphChromeRow, { ...PROPS, isEmpty: false, mobileSearchOpen: true }),
+		);
+		assert.ok(open.includes('aria-expanded="true"'), "controlled open reaches the toggle");
+		assert.ok(open.includes("max-sm:absolute"), "the panel drops full-width under the row, not over the canvas");
+	});
+
+	it("the settings gear is touch-sized with a full hit area (the sheet itself opens on tap — browser-verified)", () => {
+		const html = renderToStaticMarkup(createElement(GraphChromeRow, { ...PROPS, isEmpty: false }));
+		assert.ok(html.includes('aria-label="Graph display settings"'), "the gear renders on a populated graph");
+		// size-9 trigger + ::after hit-area extension: tappable without
+		// stealing row space; the panel it opens is a max-sm:fixed bottom
+		// sheet (graph-view.tsx GraphSettingsControl — visible only when
+		// open, so pinned in the browser, not SSR)
+		assert.ok(html.includes("size-9"), "the gear meets the 36px touch floor");
+		assert.ok(html.includes("after:-inset-1.5"), "the full hit area rides the trigger");
 	});
 });

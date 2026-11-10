@@ -12,6 +12,7 @@ Object.assign(globalThis, {
 	window: dom.window, document: dom.document, HTMLElement: dom.window.HTMLElement,
 	IS_REACT_ACT_ENVIRONMENT: true,
 });
+Object.defineProperty(dom.window, "innerHeight", { configurable: true, value: 900 });
 const observers: TestObserver[] = [];
 class TestObserver {
 	elements = new Set<Element>();
@@ -31,7 +32,7 @@ Object.assign(globalThis, {
 	}),
 });
 // Import after installing window so the hook uses its browser layout effect.
-const { dockHeightBudget, syncDockHeight, useDockHeight, forwardDockWheel } = await import("../components/dock-height.ts");
+const { dockBlockCap, dockHeightBudget, syncDockHeight, useDockHeight, forwardDockWheel } = await import("../components/dock-height.ts");
 
 const normal = {
 	columnHeight: 700, outsideHeight: 60, beforeShellHeight: 0,
@@ -39,10 +40,25 @@ const normal = {
 	questionPaddingHeight: 12,
 };
 
+describe("dockBlockCap — 55dvh ceiling with a transcript reserve and a short-window floor", () => {
+	it("reserves 16rem up to 55dvh, then floors at 320px on short windows", () => {
+		assert.equal(dockBlockCap(700, 900), 444);
+		assert.equal(dockBlockCap(700, 500), 320);
+		assert.equal(dockBlockCap(400, 768), 320);
+		assert.equal(dockBlockCap(292, 900), 260);
+		assert.equal(dockBlockCap(20, 900), 0);
+	});
+});
+
 describe("dockHeightBudget — whole dock, not just its question", () => {
 	it("subtracts answer controls, toolbar, borders and breathing gap", () => {
 		assert.deepEqual(dockHeightBudget(normal), {
 			viewportMaxHeight: 608, shellMaxHeight: 608, questionMaxHeight: 406, scrollWholeContent: false,
+		});
+	});
+	it("caps the whole block at the given ceiling and preserves the question viewport", () => {
+		assert.deepEqual(dockHeightBudget({ ...normal, maxBlockHeight: 422 }), {
+			viewportMaxHeight: 362, shellMaxHeight: 362, questionMaxHeight: 160, scrollWholeContent: false,
 		});
 	});
 	it("accounts for growing answer fields and the separate reading draft", () => {
@@ -129,7 +145,7 @@ const part = (host: HTMLElement, name: string) => host.querySelector<HTMLElement
 describe("measured question/practice DOM and observer lifecycle", () => {
 	it("applies constraints before the morph layout effect and handles classic scrollbar insets", async () => {
 		await withFixture(async (host, render) => {
-			await render({ inspected: block => assert.equal(block.style.getPropertyValue("--dock-max-h"), "406px") });
+			await render({ inspected: block => assert.equal(block.style.getPropertyValue("--dock-max-h"), "182px") });
 			assert.equal(part(host, "block").dataset.inset, "10");
 			assert.equal(part(host, "viewport").style.overflowY, "visible");
 			assert.ok(!part(host, "viewport").contains(host.querySelector('[data-testid="toolbar"]')));
@@ -140,7 +156,7 @@ describe("measured question/practice DOM and observer lifecycle", () => {
 			await render();
 			Object.assign(sizes, { block: 160, viewport: 100, body: 100, shell: 100 });
 			await act(async () => observers.at(-1)!.callback());
-			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h"), "406px");
+			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h"), "182px");
 		});
 	});
 	it("ignores the still-mounted hidden teaching form and sizes it synchronously on reveal", async () => {
@@ -151,7 +167,7 @@ describe("measured question/practice DOM and observer lifecycle", () => {
 			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h") || "", "");
 			assert.equal(part(host, "viewport").style.overflowY, "visible");
 			resetSizes();
-			await render({ expanded: true, inspected: block => assert.equal(block.style.getPropertyValue("--dock-max-h"), "406px") });
+			await render({ expanded: true, inspected: block => assert.equal(block.style.getPropertyValue("--dock-max-h"), "182px") });
 		});
 	});
 	it("reconnects to practice's newly mounted question after collapsing and revealing", async () => {
@@ -164,7 +180,7 @@ describe("measured question/practice DOM and observer lifecycle", () => {
 			await render({ practice: true, expanded: true });
 			assert.equal(collapsedObserver.disconnected, true);
 			assert.ok(observers.at(-1)!.elements.has(host.querySelector('[data-dock-scroll-area]')!));
-			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h"), "406px");
+			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h"), "182px");
 		});
 	});
 	it("intentionally uncaps the question for a short window, then restores the measured cap on growth", async () => {
@@ -177,7 +193,7 @@ describe("measured question/practice DOM and observer lifecycle", () => {
 			assert.equal(part(host, "shell").style.maxHeight, "none");
 			sizes.column = 700;
 			await act(async () => observers.at(-1)!.callback());
-			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h"), "406px");
+			assert.equal(part(host, "block").style.getPropertyValue("--dock-max-h"), "182px");
 			assert.equal(part(host, "viewport").style.overflowY, "visible");
 		});
 	});

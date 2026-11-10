@@ -175,9 +175,55 @@ export function outsideTexComments(body: string, transform: (part: string) => st
 	out.push(transform(body.slice(from))); return out.join("");
 }
 
+/** A whole tool string can arrive as ONE undecoded JSON layer: line breaks
+ * are `\n` AND quotes/backslashes are `\"`/`\\`. The escaped fence is the
+ * evidence; only then do we decode the string exactly once. JSON.parse is
+ * the right inverse — it preserves the author's C escape (`\\n` becomes a
+ * literal `\n`) instead of turning every backslash into layout. A text with
+ * physical newlines cannot be a JSON string and is left to the per-fence
+ * fallback below. */
+const ESCAPED_FENCE = /(?:^|\\n)[ \t]{0,3}(?:`{3,}|~{3,})[^\n`\\]*(?:\\r\\n|\\n)/;
+function decodeJsonToolText(text: string): string | null {
+	if (/[\r\n]/.test(text) || !ESCAPED_FENCE.test(text)) return null;
+	try {
+		const decoded: unknown = JSON.parse(`"${text}"`);
+		return typeof decoded === "string" ? decoded : null;
+	} catch {
+		return null;
+	}
+}
+
+/** A fenced code block whose line breaks are still literal `\n` escapes —
+ * a JSON string that was never decoded — parses on the raw single line as
+ * ONE inline-code span, so ordinary recovery (which protects code) leaves
+ * the escapes on screen as plain text. When the span is exactly a fence
+ * pair, decode its separators and line breaks. Backslash runs follow one
+ * JSON layer's pairing: `\\n` (two slashes) stays a literal C `\n`; only an
+ * odd run is a document newline. Anything that is not a fence pair returns
+ * null and is left untouched. */
+function decodeEscapedCodeFence(raw: string): string | null {
+	const match = /^([ \t]{0,3})(`{3,}|~{3,})([^\n`\\]*)(?:\\r\\n|\\n)([\s\S]*?)(?:\\r\\n|\\n)([ \t]{0,3}(?:`{3,}|~{3,}))[ \t]*$/.exec(raw);
+	if (!match) return null;
+	const [, indent = "", openFence, lang = "", body, closeFence] = match;
+	if (!openFence || !body || !closeFence) return null;
+	const close = closeFence.trim();
+	if (close[0] !== openFence[0] || close.length < openFence.length) return null;
+	const unescape = (part: string) => part.replace(/(\\+)([nr])/g, (_whole: string, slashes: string, char: string) => {
+		const count = slashes.length;
+		const literal = "\\".repeat(count >> 1);
+		if (count % 2 === 0) return literal + char;
+		return literal + (char === "r" ? "\r" : "\n");
+	});
+	return `${indent}${openFence}${lang}\n${unescape(body)}\n${closeFence}`;
+}
+
 /** Document escapes are not arbitrary string decoding. Complete known TeX
- * words win over the prefix `\\n`; code is never inspected or rewritten. */
+ * words win over the prefix `\\n`; code spans are protected except for a
+ * whole escaped fence pair, whose frame recovery owns (above). */
 export function recoverDocumentLayout(text: string): string {
+	// Whole-string JSON layers win first: they restore quotes and C/LaTeX
+	// backslashes, not just the fence's own line breaks.
+	text = decodeJsonToolText(text) ?? text;
 	const spans = readContentSpans(text);
 	const candidates = spans.filter(span => span.kind !== "code").map(span => span.raw).join("\u0000");
 	const declared = new Set([
@@ -187,7 +233,8 @@ export function recoverDocumentLayout(text: string): string {
 	const knownN = (name: string) => declared.has(name) || knownTexCommand(name);
 	const tokens = [...candidates.matchAll(/(\\+)(n[A-Za-z]*)/g)];
 	const evidence = tokens.filter(m => m[1]!.length % 2 === 1 && !knownN(m[2]!));
-	const structural = evidence.length >= 2 || candidates.includes("\\n\\n") || (evidence.length > 0 &&
+	const hasEscapedFence = spans.some(span => span.kind === "code" && decodeEscapedCodeFence(span.raw) !== null);
+	const structural = hasEscapedFence || evidence.length >= 2 || candidates.includes("\\n\\n") || (evidence.length > 0 &&
 		[...candidates.matchAll(/(\\+)([A-Za-z]+)/g)].some(m => m[1]!.length % 2 === 0 && knownTexCommand(m[2]!)));
 	if (!structural) return text;
 	const decode = (part: string) => part.replace(/(\\+)(n[A-Za-z]*)/g, (whole: string, slashes: string, name: string, offset: number) => {
@@ -196,10 +243,24 @@ export function recoverDocumentLayout(text: string): string {
 		if (/^(?:[A-Za-z]:[\\/]|https?:\/\/|\/)/.test(word + whole)) return whole;
 		return slashes.slice(0, -1) + "\n" + name.slice(1);
 	});
-	const projected = spans.map(span => ({ span, body: span.kind === "math" ? outsideTexComments(span.body, decode) : span.kind === "code" ? span.raw : decode(span.raw) }));
+	const projected = spans.map(span => ({
+		span,
+		body: span.kind === "math"
+			? outsideTexComments(span.body, decode)
+			: span.kind === "code"
+				? (decodeEscapedCodeFence(span.raw) ?? span.raw)
+				: decode(span.raw),
+	}));
 	let out = "";
 	for (let i = 0; i < projected.length; i++) {
 		const { span, body } = projected[i]!;
+		if (span.kind === "code" && body !== span.raw) {
+			if (!/^[ \t]{0,3}$/.test(out.slice(out.lastIndexOf("\n") + 1))) out += "\n\n";
+			out += body;
+			const next = projected[i + 1];
+			if (next && !/^[\r\n]/.test(next.span.kind === "math" ? next.span.open : next.body)) out += "\n\n";
+			continue;
+		}
 		if (span.kind !== "math") { out += body; continue; }
 		// Decoding document layout can expose a flow opener whose close was
 		// written on the formula line. Frame BOTH ends; otherwise Markdown

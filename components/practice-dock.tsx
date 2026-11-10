@@ -90,7 +90,7 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 				type="button"
 				data-testid="practice-dock-bar"
 				onClick={onExpand}
-				className="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:text-foreground"
+				className="flex min-h-11 w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:text-foreground"
 			>
 				<ChevronRightIcon className="size-4 shrink-0 rotate-90" />
 				<span className="font-medium">Problem</span>
@@ -104,20 +104,23 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 		<div data-testid="practice-dock" data-problem={problemCallId}>
 			{/* The agent's half: the 'Problem' eyebrow (mirroring the quiz
 			    cards' label row — owner round, 2026-10-05) + the statement,
-			    markdown + LaTeX rendered, capped by the measured column
-			    (--dock-max-h; the old fixed 40vh cut long problems short). */}
-			<div data-dock-scroll-area="" className="max-h-[var(--dock-max-h,40vh)] overflow-y-auto px-4 pt-3 pb-2">
-				<div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Problem</div>
-				<div className="lh-prose text-[15px]">
-					<ToolContentResponse>{input.statement}</ToolContentResponse>
+			    markdown + LaTeX rendered. The whole sheet scrolls under the
+			    measured cap (--dock-max-h: min(55dvh, column − 16rem)); the
+			    send row stays pinned below it (critique round, 2026-11-04). */}
+			<div data-dock-scroll-area="" className="max-h-[var(--dock-max-h,40vh)] overflow-y-auto">
+				<div className="px-4 pt-3 pb-2">
+					<div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Problem</div>
+					<div className="lh-prose text-[16px]">
+						<ToolContentResponse>{input.statement}</ToolContentResponse>
+					</div>
 				</div>
-			</div>
 
 			{/* The learner's half: Enter SENDS (owner round 2, 2026-10-05);
-			    Shift+Enter makes a newline — less to decide about. */}
+			    Shift+Enter makes a newline — less to decide about. The field
+			    scrolls with the problem sheet; Send stays pinned below. */}
 			<div
 				data-testid="practice-thinking-field"
-				className="m-1.5 rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
+				className="m-1.5 rounded-lg border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/60"
 			>
 				<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 					YOUR THINKING
@@ -149,10 +152,12 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 						"field-sizing-content lh-input max-h-64 min-h-16 w-full resize-none bg-transparent px-2.5 pb-2 outline-none placeholder:text-muted-foreground",
 					)}
 				/>
-				{/* The submit row (owner round 4, 2026-10-05): IDENTICAL to the
-				    question dock's — hint left, the SAME Button (h-9, px-3.5),
-				    one p-1 row. Corner radii concentric: shell 16 − m-1.5 (6) =
-				    field 10 − p-1 (4) = button 6. */}
+			</div>
+			</div>
+			{/* The submit row (owner round 4, 2026-10-05): IDENTICAL to the
+			    question dock's — hint left, the SAME Button (h-9, px-3.5),
+			    one p-1 row. Pinned outside the scrolling sheet. */}
+			<div className="border-t border-border/60 p-1.5">
 				<div className="flex items-center justify-between gap-2 p-1">
 					<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
 						{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
@@ -162,7 +167,7 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 						data-testid="practice-send"
 						disabled={thinking.trim().length === 0 || compactionRunning}
 						onClick={() => submit()}
-						className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
+						className="ml-auto h-9 rounded-md px-3.5 text-sm font-medium max-sm:h-11"
 					>
 						Submit thinking
 					</Button>

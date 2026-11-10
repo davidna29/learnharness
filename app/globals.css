@@ -22,9 +22,21 @@
    session lit up when the quiz's ←/→ were pressed). Surfaces carry their
    own hover/active/selected affordances; the dock's keyboard walk uses
    its own ring utilities, unaffected by an outline reset. */
-*:focus,
-*:focus-visible {
-	outline: none;
+/* Focus (audit round, 2026-11-04): pointer focus stays quiet, but a
+   keyboard focus-visible ring is mandatory — the app previously removed
+   every outline and relied on hover/selected tone alone. The base ring is
+   deliberately thin and Ash; components with their own `outline-none` +
+   ring utilities keep those (utilities win over the base layer). */
+@layer base {
+	*:focus,
+	*:focus-visible {
+		outline: none;
+	}
+
+	:where(button, a, input, textarea, select, [contenteditable="true"]):focus-visible {
+		outline: 1px solid var(--ring);
+		outline-offset: 1px;
+	}
 }
 
 /* Palette (owner's hexes): main #141414, raised #1C1C1C, edges #434343.
@@ -65,6 +77,20 @@
 	--lh-prose-leading: 1.5;
 	/* Markdown heading weight (appearance settings; 900 = the Black cut). */
 	--lh-heading-weight: 900;
+}
+
+/* Phone safe areas (mobile/LAN round, 2026-11-04): the PWA uses
+   viewport-fit=cover, so the notch/home-indicator bands need their own
+   padding. Desktop values are zero. */
+.lh-safe-top {
+	padding-top: env(safe-area-inset-top);
+}
+.lh-safe-top-bar {
+	height: calc(3.75rem + env(safe-area-inset-top));
+	padding-top: env(safe-area-inset-top);
+}
+.lh-safe-dock {
+	padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
 }
 
 /* The app is always dark (<html class="dark">); mirror the same values so
@@ -175,8 +201,13 @@
 	--color-ring: var(--ring);
 }
 
-* {
-	border-color: var(--color-border);
+/* Base default only: the layer lets component utilities (border-primary,
+   border-green-500, focus-within:border-primary/50) win again. The old
+   unlayered rule silently overrode every state border in the app. */
+@layer base {
+	* {
+		border-color: var(--color-border);
+	}
 }
 
 body {

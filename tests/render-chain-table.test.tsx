@@ -148,8 +148,10 @@ describe("ChainTableBody — THE shared TopBar + the lines law (owner, round 2)"
 		assert.ok(sep >= 4, "header + 3 group rules");
 		// chain rows themselves carry NO border — their entire class list is
 		// the staircase law (pl-12 = aligned with the cluster's FOLDER icon);
-		// the chip outlines' border-border/70 is an outline, not a row line
-		assert.ok(html.includes('class="flex items-center gap-1 py-1 pl-12 pr-3"'), "the chain row: staircase indent, no border");
+		// the chip outlines' border-border/70 is an outline, not a row line.
+		// max-sm:min-h-11 (graph mobile round, 2026-11-06): touch height only,
+		// still no border — the law holds on coarse pointers too.
+		assert.ok(html.includes('class="flex items-center gap-1 py-1 pl-12 pr-3 max-sm:min-h-11"'), "the chain row: staircase indent, no border");
 	});
 
 	it("TREE THREADS: open folders/chains drop a vertical guide from their expander arrow down the children's edge (owner round 5)", () => {

@@ -66,7 +66,7 @@
 import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { NotesImportControl, NotesImportErrors, NotesImportNotices, useNotesImport } from "@/components/notes-import.tsx";
 import Link from "next/link";
-import { FileTextIcon, ListTreeIcon, Loader2Icon, SearchIcon, SettingsIcon, WaypointsIcon } from "lucide-react";
+import { FileTextIcon, ListTreeIcon, Loader2Icon, SearchIcon, SettingsIcon, WaypointsIcon, XIcon } from "lucide-react";
 import { incrementalLayout, propositionSessionHref, type GraphCostSummary, type GraphNode, type GraphSnapshot } from "@/src/core";
 import { planCostLabel } from "@/components/usage-format";
 import { GraphCanvasRenderer, type GraphRenderSettings } from "./graph-canvas.ts";
@@ -393,7 +393,7 @@ function GraphCostPanel({ costs }: { costs: GraphCostSummary }) {
 	return (
 		<div className="w-80 max-w-[calc(100vw-1.5rem)] rounded-xl border bg-card/95 p-3 text-xs shadow-lg backdrop-blur">
 			<div className="mb-2 flex items-baseline justify-between">
-				<span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+				<span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
 					Graph pipeline costs
 				</span>
 				<span className="text-foreground tabular-nums">
@@ -470,9 +470,10 @@ function GraphSettingsControl({
 			>
 				<button
 				type="button"
+				aria-label="Graph display settings"
 				aria-expanded={open}
 				onClick={() => setOpen((o) => !o)}
-				className={`flex size-9 items-center justify-center rounded-xl border bg-card/85 shadow-lg backdrop-blur transition-colors hover:bg-accent ${
+				className={`relative flex size-9 items-center justify-center rounded-xl border bg-card/85 shadow-lg backdrop-blur transition-colors after:absolute after:-inset-1.5 after:content-[''] hover:bg-accent ${
 					open ? "text-foreground" : "text-muted-foreground hover:text-foreground"
 				}`}
 			>
@@ -491,7 +492,7 @@ function GraphSettingsControl({
 				// (pr-2.5) -> scrollbar -> 10px (p-2.5) -> panel edge. The
 				// scrollbar itself does NOT move: it stays pinned at the same
 				// distance from the panel's right border.
-				<div className="absolute right-0 top-full mt-2 flex max-h-[60vh] w-72 flex-col rounded-xl border bg-card/85 p-2.5 shadow-lg backdrop-blur">
+<div className="absolute right-0 top-full mt-2 flex max-h-[60vh] w-72 flex-col rounded-xl border bg-card/85 p-2.5 shadow-lg backdrop-blur max-sm:fixed max-sm:inset-x-3 max-sm:bottom-3 max-sm:top-auto max-sm:mt-0 max-sm:w-auto max-sm:max-h-[70dvh]">
 					<div className="flex flex-col gap-2 overflow-y-auto pr-2.5">
 							{/* Size/zoom/region sliders: LADDER-mapped 0-100, step 10 (11
 							    stops, every DEFAULT dead-center at 50, every value a nice
@@ -556,7 +557,7 @@ function GraphSettingsControl({
 						    the whole build (splat/blur/readback/blit), not just
 						    the paint. */}
 						<div className="mt-1.5 flex flex-col gap-1.5 border-t pt-1.5">
-							<span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+							<span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
 								Regions
 							</span>
 							<label className="flex cursor-pointer items-center justify-between text-[11px] text-muted-foreground">
@@ -677,7 +678,7 @@ function GraphSettingsControl({
 						    Order (user 2026-09-17): general forces first; depth
 						    anchor + its gray-out-able controls last. */}
 						<div className="mt-1.5 flex flex-col gap-1.5 border-t pt-1.5">
-							<span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+							<span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
 								Physics
 							</span>
 							<SettingSlider
@@ -844,6 +845,8 @@ export function GraphChromeRow({
 	noMatch,
 	importing,
 	searchInputRef,
+	mobileSearchOpen,
+	onToggleMobileSearch,
 	onImportFiles,
 	settings,
 	changeSettings,
@@ -858,38 +861,83 @@ export function GraphChromeRow({
 	importing: boolean;
 	searchInputRef: React.RefObject<HTMLInputElement | null>;
 	onImportFiles: (files: FileList | null) => void;
+	/** Controlled mobile search-panel state (graph rounds, 2026-11-06):
+	    GraphView owns it so ⌘F can open the panel on narrow screens where
+	    the inline box is collapsed. Uncontrolled (tests, minimal home)
+	    falls back to internal state. */
+	mobileSearchOpen?: boolean;
+	onToggleMobileSearch?: () => void;
 	settings: GraphRenderSettings;
 	changeSettings: (update: (cur: RenderSettings) => RenderSettings) => void;
 	/** Opens the chain table overlay (the chains-overlay plan,
 	 *  2026-09-29). */
 	onOpenChains: () => void;
 }) {
+	const [internalSearchOpen, setInternalSearchOpen] = useState(false);
+	const searchOpen = mobileSearchOpen ?? internalSearchOpen;
+	const searchRootRef = useRef<HTMLDivElement | null>(null);
+	const toggleSearch = useCallback(() => {
+		if (onToggleMobileSearch) {
+			if (!searchOpen) requestAnimationFrame(() => searchInputRef.current?.focus());
+			onToggleMobileSearch();
+			return;
+		}
+		setInternalSearchOpen((wasOpen) => {
+			if (!wasOpen) requestAnimationFrame(() => searchInputRef.current?.focus());
+			return !wasOpen;
+		});
+	}, [onToggleMobileSearch, searchOpen]);
+	const closeSearch = useCallback(() => {
+		if (onToggleMobileSearch) {
+			if (searchOpen) onToggleMobileSearch();
+		} else {
+			setInternalSearchOpen(false);
+		}
+	}, [onToggleMobileSearch, searchOpen]);
+	// Tap-outside + Escape close (shared popover-dismiss idiom): the root
+	// wraps toggle + panel, so the toggle itself stays "inside".
+	usePopoverDismiss(searchRootRef, searchOpen, closeSearch);
 	return (
 		<>
 			{!isEmpty && (
-				<div className="graph-chrome-fade-in w-56 min-w-0 shrink rounded-xl border bg-card/85 px-1 py-[3px] shadow-lg backdrop-blur">
-					<Hint
-						// ⌘F focuses node search (surface-scoped registry action).
-						label="Search nodes"
-						action="find"
-						side="bottom"
+				<div ref={searchRootRef} className="contents">
+					{/* Mobile search toggle (graph round, 2026-11-06): the full
+					    search box does not fit the <sm row alongside the other
+					    controls, so it collapses to this icon and expands into
+					    a full-width panel under the row. Desktop keeps the
+					    inline box untouched. */}
+					<button
+						type="button"
+						data-testid="graph-search-toggle"
+						aria-label="Search nodes"
+						aria-expanded={searchOpen}
+						onClick={toggleSearch}
+						className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border bg-card/85 text-muted-foreground shadow-lg backdrop-blur transition-colors after:absolute after:-inset-1.5 after:content-[''] hover:bg-accent hover:text-foreground sm:hidden"
 					>
-					<div className="relative">
-						<SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-						<input
-							ref={searchInputRef}
-							value={query}
-							onChange={(e) => onQuery(e.target.value)}
-							placeholder="Search nodes…"
-							aria-label="Search nodes"
-							spellCheck={false}
-							className="h-7 w-full rounded-lg border bg-background pl-8 text-xs outline-none placeholder:text-muted-foreground focus:border-ring"
-						/>
+						<SearchIcon className="size-4" />
+					</button>
+					<div data-testid="graph-search-panel" className={`graph-chrome-fade-in min-w-0 shrink rounded-xl border bg-card/85 px-1 py-[3px] shadow-lg backdrop-blur w-56 ${searchOpen ? "max-sm:absolute max-sm:inset-x-0 max-sm:top-full max-sm:mt-2 max-sm:w-auto" : "max-sm:hidden"}`}>
+						<Hint
+							// User language (tooltip wave) — "render" is internal; the
+							// label stays user-facing ("Graph display settings").
+							label="Search nodes"
+							side="bottom"
+						>
+						<div className="relative">
+							<SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+							<input
+								ref={searchInputRef}
+								value={query}
+								onChange={(e) => onQuery(e.target.value)}
+								placeholder="Search nodes…"
+								aria-label="Search nodes"
+								spellCheck={false}
+								className="h-7 w-full rounded-lg border bg-background pl-8 text-xs outline-none placeholder:text-muted-foreground focus:border-ring max-sm:h-11 max-sm:text-sm"
+							/>
+						</div>
+						</Hint>
+						{noMatch && <div className="px-1 pt-2 text-xs text-muted-foreground">No matching nodes.</div>}
 					</div>
-					</Hint>
-					{noMatch && (
-						<div className="px-1.5 pt-1 text-[11px] text-muted-foreground">No matching nodes.</div>
-					)}
 				</div>
 			)}
 			{/* The chain table (chains overlay, owner plan 2026-09-29). Own
@@ -900,10 +948,11 @@ export function GraphChromeRow({
 							type="button"
 							onClick={onOpenChains}
 							data-testid="open-chain-table"
-							className="flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent"
+							aria-label="Every reasoning chain"
+							className="relative flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors after:absolute after:-inset-1.5 after:content-[''] hover:bg-accent max-sm:size-9 max-sm:justify-center max-sm:p-0"
 						>
-							<ListTreeIcon className="size-3" />
-							Chains
+							<ListTreeIcon className="size-3.5" />
+							<span className="max-sm:hidden">Chains</span>
 						</button>
 					</Hint>
 				</div>
@@ -952,6 +1001,10 @@ export function GraphView({
 
 	// Search panel state: the query text + the settings section toggle.
 	const [query, setQuery] = useState("");
+	// Mobile search panel (graph round, 2026-11-06): on narrow screens the
+	// inline box is collapsed behind an icon toggle, so ⌘F must open it
+	// first — desktop keeps firing straight at the always-visible field.
+	const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 	// Surface-scoped Find: the chains overlay owns it while open.
 	const searchInputRef = useRef<HTMLInputElement>(null);
 	// Render settings: SERVER-persisted (data/render-settings.json via
@@ -1039,7 +1092,15 @@ export function GraphView({
 	const [chainsOpen, setChainsOpen] = useState(false);
 	useEffect(() => {
 		if (chainsOpen) return;
-		const onFind = () => searchInputRef.current?.focus();
+		const onFind = () => {
+			// Narrow screens hide the inline box behind the toggle — open
+			// the panel first, then focus. Desktop keeps firing straight at
+			// the always-visible field.
+			if (window.matchMedia("(max-width: 639px)").matches) {
+				setMobileSearchOpen(true);
+			}
+			requestAnimationFrame(() => searchInputRef.current?.focus());
+		};
 		window.addEventListener("lh:kbd-find", onFind);
 		return () => window.removeEventListener("lh:kbd-find", onFind);
 	}, [chainsOpen]);
@@ -1472,8 +1533,7 @@ export function GraphView({
 						<WaypointsIcon className="size-10 opacity-40" strokeWidth={1.25} />
 						<div className="text-lg font-medium text-foreground">Knowledge graph</div>
 						<div className="max-w-sm text-sm">
-							<p>Start a session to begin learning.</p>
-							<p className="mt-1 text-xs">Attach your material with the paperclip or drag and drop.</p>
+							<p>Start a session or import notes to build your graph.</p>
 						</div>
 					</div>
 				</div>
@@ -1512,7 +1572,7 @@ export function GraphView({
 							setDeletingNode({ id: ctxNode.id, name: ctxNode.name });
 							setCtxNode(null);
 						}}
-						className="flex items-center rounded-lg px-2.5 py-1.5 text-left text-muted-foreground/80 transition-colors hover:bg-accent hover:text-foreground"
+						className="flex items-center rounded-lg px-2.5 py-1.5 text-left text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 					>
 						Delete
 					</button>
@@ -1585,6 +1645,8 @@ export function GraphView({
 					settings={settings}
 					changeSettings={changeSettings}
 					onOpenChains={() => setChainsOpen(true)}
+					mobileSearchOpen={mobileSearchOpen}
+					onToggleMobileSearch={() => setMobileSearchOpen((o) => !o)}
 				/>
 			</div>
 
@@ -1619,9 +1681,22 @@ export function GraphView({
 					// lh-no-drag: the card is placed anywhere on the canvas —
 					// when it lands in the top strip it must stay interactive
 					// over home.tsx's drag surface (2026-09-17).
-					className="lh-no-drag absolute z-10 w-80 max-w-[calc(100%-1rem)] rounded-xl border bg-card p-4 text-left shadow-lg"
+					className="lh-no-drag absolute z-10 max-h-[70dvh] w-80 max-w-[calc(100%-1rem)] overflow-y-auto rounded-xl border bg-card p-4 text-left shadow-lg"
 				>
-					<div className="text-sm font-medium leading-snug">{selected.node.name}</div>
+					{/* Explicit dismiss (graph mobile round, 2026-11-06): tap-outside
+					    closes on touch via the stage handler, but a small moving card
+					    is hard to miss — an explicit close is the reliable affordance. */}
+					<div className="flex items-start justify-between gap-2">
+						<div className="text-sm font-medium leading-snug">{selected.node.name}</div>
+						<button
+							type="button"
+							aria-label="Close node details"
+							onClick={() => setSelected(null)}
+							className="relative -mr-1 -mt-1 flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors after:absolute after:-inset-1 after:content-[''] hover:bg-accent hover:text-foreground"
+						>
+							<XIcon className="size-4" />
+						</button>
+					</div>
 					<div className="mt-1 text-xs leading-relaxed text-muted-foreground">{selected.node.statement}</div>
 					{selected.sourceIds.length > 0 ? (
 						<div className="mt-3 flex flex-col gap-1">
@@ -1645,7 +1720,7 @@ export function GraphView({
 										<Link
 											href={propositionSessionHref(selected.node, sourceId)}
 											scroll={false}
-											className="min-w-0 flex-1 truncate rounded-md px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-accent"
+											className="min-w-0 flex-1 truncate rounded-md px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-accent max-sm:min-h-11 max-sm:items-center max-sm:py-2"
 										>
 											{snapshot?.sessions[sourceId] ?? sourceId}
 										</Link>
